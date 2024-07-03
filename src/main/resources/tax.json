@@ -1,0 +1,71 @@
+{
+  "id": "4b565a8b-e095-4047-9ae3-3c288ca717a6",
+  "status": "completed",
+  "results": {
+    "from": "2020-12-31T23:00:00.000Z",
+    "to": "2021-12-31T22:59:59.000Z",
+    "year": 2021,
+    "transactions": {
+      "total": 937,
+      "deposits": 723,
+      "withdrawals": 15,
+      "trades": 177,
+      "transfers": 22,
+      "errors": 0
+    },
+    "capital_gains": {
+      "disposals": 537,
+      "profit": "3402.663441381",
+      "loss": "1247.6244757604",
+      "net": "2155.0389656206",
+      "costs": "68652.86275697",
+      "proceeds": "70807.9017225906",
+      "failed": 0
+    },
+    "income": {
+      "airdrop": "0.0",
+      "fork": "0.0",
+      "mining": "0.0",
+      "reward": "451.218318638",
+      "salary": "0.0",
+      "lending_interest": "0.0",
+      "other_income": "0.0",
+      "total": "451.218318638"
+    },
+    "expenses": {
+      "margin_fee": "0.0",
+      "loan_fee": "0.0",
+      "cost": "0.0",
+      "transfer_fees": "0.0",
+      "total": "0.0"
+    },
+    "special": {
+      "gift": "0.0",
+      "donation": "0.0",
+      "lost": "214.795485493",
+      "total": "214.795485493"
+    },
+    "misc": {
+      "cashback": "0.0",
+      "fee_refund": "0.0",
+      "tax": "-0.0",
+      "loan": "0.0",
+      "loan_repayment": "-0.0",
+      "margin_loan": "0.0",
+      "margin_repayment": "-0.0"
+    },
+    "external_gains": {
+      "count": 0,
+      "profit": "0.0",
+      "loss": "0.0",
+      "net": "0.0"
+    },
+    "zero_cost_gains_total": "0.0",
+    "cost_basis_method": "fifo",
+    "gains_blocked": false,
+    "txn_limit_exceeded": true,
+    "plan_limit": 1000,
+    "billable_txn_count": 3172,
+    "billable_txns_in_year": 770
+  }
+}
