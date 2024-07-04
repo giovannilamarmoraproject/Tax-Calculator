@@ -297,7 +297,7 @@ public class PdfService {
                     ? "-"
                     : transaction
                         .getInvestments()
-                        .getFirst()
+                        .getLast()
                         .getDate()
                         .atZone(ZoneId.systemDefault())
                         .format(formatter),
@@ -310,12 +310,12 @@ public class PdfService {
     cell =
         new PdfPCell(
             new Phrase(
-                ObjectUtils.isEmpty(transaction.getInvestments().getLast().getFromDate())
+                ObjectUtils.isEmpty(transaction.getInvestments().getLast().getFrom_date())
                     ? "-"
                     : transaction
                         .getInvestments()
-                        .getFirst()
-                        .getFromDate()
+                        .getLast()
+                        .getFrom_date()
                         .atZone(ZoneId.systemDefault())
                         .format(formatter),
                 PdfFont.VERY_SMALL.getFont()));

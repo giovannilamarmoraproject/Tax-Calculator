@@ -22,7 +22,7 @@ public class CryptoInvestment {
   private String subtype;
   private String poolName;
   private boolean longTerm;
-  private LocalDateTime fromDate;
+  private LocalDateTime from_date;
   private String info;
   private String notes;
   private boolean withdrawal;
