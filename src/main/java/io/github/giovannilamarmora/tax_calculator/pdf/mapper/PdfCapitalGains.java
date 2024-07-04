@@ -2,12 +2,10 @@ package io.github.giovannilamarmora.tax_calculator.pdf.mapper;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Phrase;
-import com.itextpdf.text.Rectangle;
-import com.itextpdf.text.pdf.PdfPCell;
+
 import com.itextpdf.text.pdf.PdfPTable;
 import io.github.giovannilamarmora.tax_calculator.pdf.model.CryptoTaxes;
-import io.github.giovannilamarmora.tax_calculator.pdf.model.PdfFont;
+
 import io.github.giovannilamarmora.utils.interceptors.LogInterceptor;
 import io.github.giovannilamarmora.utils.interceptors.LogTimeTracker;
 import io.github.giovannilamarmora.utils.math.MathService;
@@ -17,6 +15,7 @@ public class PdfCapitalGains {
   @LogInterceptor(type = LogTimeTracker.ActionType.MAPPER)
   public static void addCapitalGainsAndIncomeSummary(Document document, CryptoTaxes cryptoTaxes)
       throws DocumentException {
+    document.newPage();
     PdfPTable outerTable = new PdfPTable(2);
     outerTable.setWidthPercentage(100);
     outerTable.setWidths(new int[] {1, 1});

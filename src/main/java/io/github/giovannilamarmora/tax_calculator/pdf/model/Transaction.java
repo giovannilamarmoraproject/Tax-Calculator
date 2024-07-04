@@ -50,6 +50,7 @@ public class Transaction {
   private String cost_basis_method;
   private String ignored_reason; // Può essere null
   private String disposal_missing_acq_value_at; // Può essere null
+  private List<CryptoInvestment> investments;
 
   @Builder
   @Data

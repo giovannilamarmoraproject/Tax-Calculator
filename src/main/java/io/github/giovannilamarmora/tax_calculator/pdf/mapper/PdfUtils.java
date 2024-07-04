@@ -9,6 +9,8 @@ import io.github.giovannilamarmora.utils.interceptors.LogInterceptor;
 import io.github.giovannilamarmora.utils.interceptors.LogTimeTracker;
 import org.springframework.util.ObjectUtils;
 
+import java.util.List;
+
 public class PdfUtils {
 
   @LogInterceptor(type = LogTimeTracker.ActionType.MAPPER)
@@ -120,5 +122,28 @@ public class PdfUtils {
     cell.setPaddingLeft(left);
     cell.setPaddingRight(right);
     outerTable.addCell(cell);
+  }
+
+  @LogInterceptor(type = LogTimeTracker.ActionType.MAPPER)
+  public static void addTableHeader(PdfPTable table, List<String> headers) {
+    headers.forEach(
+        columnTitle -> {
+          PdfPCell header = new PdfPCell();
+          header.setBorder(PdfPCell.BOTTOM);
+          header.setPaddingBottom(10);
+          header.setBorderColor(BaseColor.LIGHT_GRAY);
+          header.setBorderWidth(1);
+
+          // Se è l'ultimo elemento, posizionalo a destra
+          if (headers.indexOf(columnTitle) == headers.size() - 1) {
+            header.setHorizontalAlignment(Element.ALIGN_RIGHT);
+          } else {
+            // Altrimenti, posizionalo a sinistra
+            header.setHorizontalAlignment(Element.ALIGN_LEFT);
+          }
+
+          header.setPhrase(new Phrase(columnTitle, PdfFont.SMALL_BOLD.getFont()));
+          table.addCell(header);
+        });
   }
 }
