@@ -126,24 +126,38 @@ public class PdfUtils {
 
   @LogInterceptor(type = LogTimeTracker.ActionType.MAPPER)
   public static void addTableHeader(PdfPTable table, List<String> headers) {
-    headers.forEach(
-        columnTitle -> {
-          PdfPCell header = new PdfPCell();
-          header.setBorder(PdfPCell.BOTTOM);
-          header.setPaddingBottom(10);
-          header.setBorderColor(BaseColor.LIGHT_GRAY);
-          header.setBorderWidth(1);
+    for (int i = 0; i < headers.size(); i++) {
+      PdfPCell header = new PdfPCell();
+      header.setBorder(PdfPCell.BOTTOM);
+      header.setPaddingBottom(10);
+      header.setBorderColor(BaseColor.LIGHT_GRAY);
+      header.setBorderWidth(1);
 
-          // Se è l'ultimo elemento, posizionalo a destra
-          if (headers.indexOf(columnTitle) == headers.size() - 1) {
-            header.setHorizontalAlignment(Element.ALIGN_RIGHT);
-          } else {
-            // Altrimenti, posizionalo a sinistra
-            header.setHorizontalAlignment(Element.ALIGN_LEFT);
-          }
+      if (i == 0) {
+        // Posiziona il primo elemento a sinistra
+        header.setHorizontalAlignment(Element.ALIGN_LEFT);
+      } else {
+        // Posiziona tutti gli altri elementi a destra
+        header.setHorizontalAlignment(Element.ALIGN_RIGHT);
+      }
 
-          header.setPhrase(new Phrase(columnTitle, PdfFont.SMALL_BOLD.getFont()));
-          table.addCell(header);
-        });
+      header.setPhrase(new Phrase(headers.get(i), PdfFont.SMALL_BOLD.getFont()));
+      table.addCell(header);
+    }
+    table.setHeaderRows(2);
+  }
+
+  @LogInterceptor(type = LogTimeTracker.ActionType.MAPPER)
+  public static String upperCamelCase(String value) {
+    return value.substring(0, 1).toUpperCase() + value.substring(1).toLowerCase();
+  }
+
+  public static String cutStringToMaxLength(String input, int maxLength) {
+    if (ObjectUtils.isEmpty(input)) return input;
+    if (input.length() <= maxLength) {
+      return input;
+    } else {
+      return input.substring(0, maxLength);
+    }
   }
 }

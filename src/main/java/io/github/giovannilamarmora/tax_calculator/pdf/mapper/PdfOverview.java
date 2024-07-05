@@ -14,12 +14,12 @@ import java.time.format.DateTimeFormatter;
 public class PdfOverview {
 
   @LogInterceptor(type = LogTimeTracker.ActionType.MAPPER)
-  public static void setFirstPage(Document document, TaxRequest taxRequest) {
+  public static void setFirstPage(Document document, int year) {
     // Aggiungi il titolo
-    addTitle(document, "Resoconto fiscale " + taxRequest.getTax().getResults().getYear());
+    addTitle(document, "Resoconto fiscale " + year);
 
     // Aggiungi la data e il periodo
-    addMetaData(document, String.valueOf(taxRequest.getTax().getResults().getYear()));
+    addMetaData(document, String.valueOf(year));
 
     // Aggiungi il sommario
     addSummary(document);

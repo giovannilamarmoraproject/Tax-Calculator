@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Builder
@@ -22,7 +23,7 @@ public class Transaction {
   private NetWorth net_worth;
   private FeeWorth fee_worth; // Può essere null
   private String gain;
-  private String date;
+  private LocalDateTime date;
   private String label; // Può essere null
   private String description; // Può essere null
   private boolean synced;
@@ -120,11 +121,11 @@ public class Transaction {
     private String name;
     private String last_txn_at;
     private String usd_value;
-    private String usd_value_updated_at;
+    private LocalDateTime usd_value_updated_at;
     private int txn_count;
     private boolean syncing;
-    private String updated_at;
-    private String created_at;
+    private LocalDateTime updated_at;
+    private LocalDateTime created_at;
     private WalletServiceDetails wallet_service;
   }
 
@@ -146,7 +147,7 @@ public class Transaction {
     private String instructions_url;
     private boolean include_api_warning_text;
     private boolean include_csv_warning_text;
-    private String updated_at;
+    private LocalDateTime updated_at;
   }
 
   @Builder

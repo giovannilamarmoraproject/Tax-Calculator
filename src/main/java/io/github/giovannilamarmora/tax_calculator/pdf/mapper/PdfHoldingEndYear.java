@@ -29,7 +29,7 @@ public class PdfHoldingEndYear {
     PdfPTable table = new PdfPTable(5);
     table.setWidthPercentage(100);
     table.setPaddingTop(5);
-    table.setWidths(new int[] {4, 2, 2, 2, 2}); // Ensure these values are valid
+    table.setWidths(new int[] {4, 2, 2, 2, 3}); // Ensure these values are valid
 
     // Rimuovi i bordi della tabella
     table.getDefaultCell().setBorder(PdfPCell.NO_BORDER);
@@ -87,7 +87,7 @@ public class PdfHoldingEndYear {
                   new Phrase(
                       String.valueOf(MathService.round(Double.parseDouble(hold.getAmount()), 8)),
                       PdfFont.VERY_SMALL.getFont()));
-          cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+          cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
           cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
           cell.setBorder(PdfPCell.NO_BORDER);
           table.addCell(cell); // Simbolo valuta
@@ -97,7 +97,7 @@ public class PdfHoldingEndYear {
                   new Phrase(
                       String.valueOf(MathService.round(Double.parseDouble(hold.getCost()), 2)),
                       PdfFont.VERY_SMALL.getFont()));
-          cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+          cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
           cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
           cell.setBorder(PdfPCell.NO_BORDER);
           table.addCell(cell); // Importo
@@ -107,7 +107,7 @@ public class PdfHoldingEndYear {
                   new Phrase(
                       String.valueOf(MathService.round(Double.parseDouble(hold.getValue()), 2)),
                       PdfFont.VERY_SMALL.getFont()));
-          cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+          cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
           cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
           cell.setBorder(PdfPCell.NO_BORDER);
           table.addCell(cell); // Valore netto
@@ -149,6 +149,7 @@ public class PdfHoldingEndYear {
 
     total = new PdfPCell(new Phrase("-"));
     total.setBorder(PdfPCell.NO_BORDER);
+    total.setHorizontalAlignment(Element.ALIGN_RIGHT);
     table.addCell(total); // Data
 
     total =
@@ -162,7 +163,7 @@ public class PdfHoldingEndYear {
                                 : holding.getPrevious().getResults().getTotal_cost()),
                         2)),
                 PdfFont.VERY_SMALL.getFont()));
-    total.setHorizontalAlignment(Element.ALIGN_LEFT);
+    total.setHorizontalAlignment(Element.ALIGN_RIGHT);
     total.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
     total.setBorder(PdfPCell.NO_BORDER);
     table.addCell(total); // Importo
@@ -178,13 +179,14 @@ public class PdfHoldingEndYear {
                                 : holding.getPrevious().getResults().getTotal_value()),
                         2)),
                 PdfFont.VERY_SMALL.getFont()));
-    total.setHorizontalAlignment(Element.ALIGN_LEFT);
+    total.setHorizontalAlignment(Element.ALIGN_RIGHT);
     total.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
     total.setBorder(PdfPCell.NO_BORDER);
     table.addCell(total); // Valore netto
 
     total = new PdfPCell(new Phrase("-"));
     total.setVerticalAlignment(Element.ALIGN_RIGHT);
+    total.setHorizontalAlignment(Element.ALIGN_RIGHT);
     total.setBorder(PdfPCell.NO_BORDER);
     total.setFixedHeight(17f); // Altezza maggiore per la riga della descrizione
     table.addCell(total); // Etichetta

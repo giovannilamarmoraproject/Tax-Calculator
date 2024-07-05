@@ -11,6 +11,7 @@ import io.github.giovannilamarmora.tax_calculator.pdf.model.PdfFont;
 import io.github.giovannilamarmora.utils.interceptors.LogInterceptor;
 import io.github.giovannilamarmora.utils.interceptors.LogTimeTracker;
 import io.github.giovannilamarmora.utils.math.MathService;
+import org.springframework.util.ObjectUtils;
 
 public class PdfIncomingGains {
 
@@ -44,7 +45,7 @@ public class PdfIncomingGains {
     leftTable.addCell(cell);
 
     incomingGainsSummary(leftTable, cryptoTaxes);
-    //PdfUtils.addToOuterTable(outerTable, leftTable, 0, 5);
+    // PdfUtils.addToOuterTable(outerTable, leftTable, 0, 5);
 
     cell = new PdfPCell(new Phrase("Riepilogo spese", PdfFont.TITLE_NORMAL.getFont()));
     cell.setBorder(Rectangle.NO_BORDER);
@@ -112,125 +113,108 @@ public class PdfIncomingGains {
 
   @LogInterceptor(type = LogTimeTracker.ActionType.MAPPER)
   private static void incomingGainsSummary(PdfPTable table, CryptoTaxes cryptoTaxes) {
+    CryptoTaxes.Results results =
+        ObjectUtils.isEmpty(cryptoTaxes.getResults())
+            ? cryptoTaxes.getPrevious().getResults()
+            : cryptoTaxes.getResults();
+
     PdfUtils.addSummaryTableRow(
         table,
         "Airdrop",
-        "€"
-            + MathService.round(
-                Double.parseDouble(cryptoTaxes.getResults().getIncome().getAirdrop()), 2),
+        "€" + MathService.round(Double.parseDouble(results.getIncome().getAirdrop()), 2),
         null);
     PdfUtils.addSummaryTableRow(
         table,
         "Fork",
-        "€"
-            + MathService.round(
-                Double.parseDouble(cryptoTaxes.getResults().getIncome().getFork()), 2),
+        "€" + MathService.round(Double.parseDouble(results.getIncome().getFork()), 2),
         null);
     PdfUtils.addSummaryTableRow(
         table,
         "Mining",
-        "€"
-            + MathService.round(
-                Double.parseDouble(cryptoTaxes.getResults().getIncome().getMining()), 2),
+        "€" + MathService.round(Double.parseDouble(results.getIncome().getMining()), 2),
         null);
     PdfUtils.addSummaryTableRow(
         table,
         "Reward",
-        "€"
-            + MathService.round(
-                Double.parseDouble(cryptoTaxes.getResults().getIncome().getReward()), 2),
+        "€" + MathService.round(Double.parseDouble(results.getIncome().getReward()), 2),
         null);
     PdfUtils.addSummaryTableRow(
         table,
         "Loan Interest",
-        "€"
-            + MathService.round(
-                Double.parseDouble(cryptoTaxes.getResults().getIncome().getLending_interest()), 2),
+        "€" + MathService.round(Double.parseDouble(results.getIncome().getLending_interest()), 2),
         null);
     PdfUtils.addSummaryTableRow(
         table,
         "Other Income",
-        "€"
-            + MathService.round(
-                Double.parseDouble(cryptoTaxes.getResults().getIncome().getOther_income()), 2),
+        "€" + MathService.round(Double.parseDouble(results.getIncome().getOther_income()), 2),
         null);
     PdfUtils.addSummaryTableRow(
         table,
         "Total",
-        "€"
-            + MathService.round(
-                Double.parseDouble(cryptoTaxes.getResults().getIncome().getTotal()), 2),
+        "€" + MathService.round(Double.parseDouble(results.getIncome().getTotal()), 2),
         null);
   }
 
   @LogInterceptor(type = LogTimeTracker.ActionType.MAPPER)
   private static void costSummary(PdfPTable table, CryptoTaxes cryptoTaxes) {
+    CryptoTaxes.Results results =
+        ObjectUtils.isEmpty(cryptoTaxes.getResults())
+            ? cryptoTaxes.getPrevious().getResults()
+            : cryptoTaxes.getResults();
+
     PdfUtils.addSummaryTableRow(
         table,
         "Cost",
-        "€"
-            + MathService.round(
-                Double.parseDouble(cryptoTaxes.getResults().getExpenses().getCost()), 2),
+        "€" + MathService.round(Double.parseDouble(results.getExpenses().getCost()), 2),
         null);
     PdfUtils.addSummaryTableRow(
         table,
         "Margin trade fee",
-        "€"
-            + MathService.round(
-                Double.parseDouble(cryptoTaxes.getResults().getExpenses().getMargin_fee()), 2),
+        "€" + MathService.round(Double.parseDouble(results.getExpenses().getMargin_fee()), 2),
         null);
     PdfUtils.addSummaryTableRow(
         table,
         "Margin interest fee",
-        "€"
-            + MathService.round(
-                Double.parseDouble(cryptoTaxes.getResults().getExpenses().getLoan_fee()), 2),
+        "€" + MathService.round(Double.parseDouble(results.getExpenses().getLoan_fee()), 2),
         null);
     PdfUtils.addSummaryTableRow(
         table,
         "Transfer fees",
-        "€"
-            + MathService.round(
-                Double.parseDouble(cryptoTaxes.getResults().getExpenses().getTransfer_fees()), 2),
+        "€" + MathService.round(Double.parseDouble(results.getExpenses().getTransfer_fees()), 2),
         null);
     PdfUtils.addSummaryTableRow(
         table,
         "Total",
-        "€"
-            + MathService.round(
-                Double.parseDouble(cryptoTaxes.getResults().getExpenses().getTotal()), 2),
+        "€" + MathService.round(Double.parseDouble(results.getExpenses().getTotal()), 2),
         null);
   }
 
   @LogInterceptor(type = LogTimeTracker.ActionType.MAPPER)
   private static void giftSummary(PdfPTable table, CryptoTaxes cryptoTaxes) {
+    CryptoTaxes.Results results =
+        ObjectUtils.isEmpty(cryptoTaxes.getResults())
+            ? cryptoTaxes.getPrevious().getResults()
+            : cryptoTaxes.getResults();
+
     PdfUtils.addSummaryTableRow(
         table,
         "Gift",
-        "€"
-            + MathService.round(
-                Double.parseDouble(cryptoTaxes.getResults().getSpecial().getGift()), 2),
+        "€" + MathService.round(Double.parseDouble(results.getSpecial().getGift()), 2),
         " ");
     PdfUtils.addSummaryTableRow(
         table,
         "Lost",
-        "€"
-            + MathService.round(
-                Double.parseDouble(cryptoTaxes.getResults().getSpecial().getLost()), 2),
+        "€" + MathService.round(Double.parseDouble(results.getSpecial().getLost()), 2),
         " ");
     PdfUtils.addSummaryTableRow(
         table,
         "Donation",
-        "€"
-            + MathService.round(
-                Double.parseDouble(cryptoTaxes.getResults().getSpecial().getDonation()), 2),
+        "€" + MathService.round(Double.parseDouble(results.getSpecial().getDonation()), 2),
         " ");
     PdfUtils.addSummaryTableRow(
         table,
         "Total",
-        "€"
-            + MathService.round(
-                Double.parseDouble(cryptoTaxes.getResults().getSpecial().getTotal()), 2),
+        "€" + MathService.round(Double.parseDouble(results.getSpecial().getTotal()), 2),
         " ");
   }
 }

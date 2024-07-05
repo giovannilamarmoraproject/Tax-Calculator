@@ -5,6 +5,7 @@ import com.itextpdf.text.pdf.*;
 import com.itextpdf.text.pdf.draw.DottedLineSeparator;
 import io.github.giovannilamarmora.tax_calculator.app.model.TaxRequest;
 import io.github.giovannilamarmora.tax_calculator.pdf.mapper.*;
+import io.github.giovannilamarmora.tax_calculator.pdf.model.CryptoInvestment;
 import io.github.giovannilamarmora.tax_calculator.pdf.model.PdfFont;
 import io.github.giovannilamarmora.tax_calculator.pdf.model.Transaction;
 import io.github.giovannilamarmora.utils.math.MathService;
@@ -12,9 +13,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.io.ByteArrayOutputStream;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -27,12 +30,17 @@ public class PdfService {
 
     try {
       PdfWriter writer = PdfWriter.getInstance(document, byteArrayOutputStream);
-      writer.setPageEvent(new PdfFooterPageEvent(taxRequest.getTax().getResults().getYear()));
+      int year =
+          ObjectUtils.isEmpty(taxRequest.getTax().getResults())
+              ? taxRequest.getTax().getPrevious().getResults().getYear()
+              : taxRequest.getTax().getResults().getYear();
+      writer.setPageEvent(new PdfFooterPageEvent(year));
       // TransactionHeader event = new TransactionHeader();
       // writer.setPageEvent(event);
       document.open();
+      document.addTitle("Tax-Report_" + LocalDateTime.now());
       // Prima pagina
-      PdfOverview.setFirstPage(document, taxRequest);
+      PdfOverview.setFirstPage(document, year);
 
       // Nuova pagina in landscape
       document.setPageSize(PageSize.A4.rotate());
@@ -46,8 +54,9 @@ public class PdfService {
 
       addCapitalGainsTransactions(document, taxRequest.getTransactions());
 
-      addInnerTransactionsTable(document, taxRequest.getTransactions());
+      PdfInnerTransaction.addTable(document, taxRequest.getTransactions());
 
+      PdfLoss.addTable(document, taxRequest.getTransactions());
       document.close();
       System.out.println("PDF creato con successo!");
 
@@ -63,56 +72,12 @@ public class PdfService {
    */
 
   // Metodo per aggiungere la tabella delle transazioni
-  private static void addInnerTransactionsTable(Document document, List<Transaction> transactions) {
-    document.newPage();
-    Paragraph preface = new Paragraph();
-    preface.add(new Paragraph("Transazioni entrate", PdfFont.TITLE_NORMAL.getFont()));
-    PdfUtils.addEmptyLine(preface, 1);
-    PdfUtils.addToDocument(document, preface);
-
-    PdfPTable table = new PdfPTable(6);
-    table.setWidthPercentage(100);
-    table.setPaddingTop(5);
-    try {
-      table.setWidths(new int[] {3, 2, 3, 2, 2, 3}); // Ensure these values are valid
-    } catch (DocumentException e) {
-      throw new RuntimeException(e);
-    }
-
-    // Rimuovi i bordi della tabella
-    table.getDefaultCell().setBorder(PdfPCell.NO_BORDER);
-
-    // Aggiungi la linea grigia sopra al contenuto
-    PdfPCell lineCell = new PdfPCell();
-    lineCell.setBorder(PdfPCell.NO_BORDER);
-    lineCell.setFixedHeight(1f); // Altezza della linea grigia
-    lineCell.setColspan(6); // Numero di colonne della tabella
-    table.addCell(lineCell);
-
-    // Aggiungi intestazione della tabella
-    PdfUtils.addTableHeader(
-        table, List.of("Data", "Attivo", "Importo", "Valore (EUR)", "Tipo", "Note"));
-
-    // Aggiungi righe di transazioni filtrate
-    List<Transaction> crypto_deposit =
-        transactions.stream()
-            .filter(
-                transaction ->
-                    transaction.getType().equalsIgnoreCase("crypto_deposit")
-                        && transaction.getLabel() != null)
-            .toList();
-    addInnerTransactionRows(table, crypto_deposit);
-
-    PdfUtils.addToDocument(document, table);
-  }
-
-  // Metodo per aggiungere la tabella delle transazioni
   private static void addCapitalGainsTransactions(Document document, List<Transaction> transactions)
       throws DocumentException {
     document.newPage();
-    Paragraph preface = new Paragraph();
-    preface.add(new Paragraph("Transazioni di plusvalenze", PdfFont.TITLE_NORMAL.getFont()));
-    PdfUtils.addEmptyLine(preface, 1);
+    Paragraph preface = new Paragraph("Transazioni di plusvalenze", PdfFont.TITLE_NORMAL.getFont());
+    preface.setPaddingTop(-10);
+    // PdfUtils.addEmptyLine(preface, 1);
     PdfUtils.addToDocument(document, preface);
 
     PdfPTable table = new PdfPTable(9);
@@ -150,7 +115,8 @@ public class PdfService {
             .filter(
                 transaction ->
                     transaction.getType().equalsIgnoreCase("crypto_withdrawal")
-                        || transaction.getType().equalsIgnoreCase("exchange"))
+                        || transaction.getType().equalsIgnoreCase("exchange")
+                        || transaction.getType().equalsIgnoreCase("sell"))
             .toList();
     addGainTransactionRows(table, crypto_withdrawal);
 
@@ -170,14 +136,20 @@ public class PdfService {
         .mapToObj(i -> transactions.get(transactions.size() - 1 - i))
         .forEach(
             transaction -> {
-              if (!ObjectUtils.isEmpty(transaction.getFee()))
-                addFeeTransactionRows(table, transaction);
+              if (!ObjectUtils.isEmpty(transaction.getInvestments())) {
+                addFeeTransactionsRows(table, transaction.getInvestments(), transaction);
+                return;
+              }
+
+              if (ObjectUtils.isEmpty(transaction.getFee())
+                  && transaction.getType().equalsIgnoreCase("exchange")) {
+                return;
+              }
+
               PdfPCell cell =
                   new PdfPCell(
                       new Phrase(
-                          ZonedDateTime.parse(transaction.getDate())
-                              .withZoneSameInstant(ZoneId.systemDefault())
-                              .format(formatter),
+                          transaction.getDate().atZone(ZoneId.systemDefault()).format(formatter),
                           PdfFont.VERY_SMALL.getFont()));
               cell.setHorizontalAlignment(Element.ALIGN_LEFT);
               cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
@@ -187,11 +159,9 @@ public class PdfService {
               cell =
                   new PdfPCell(
                       new Phrase(
-                          ZonedDateTime.parse(transaction.getDate())
-                              .withZoneSameInstant(ZoneId.systemDefault())
-                              .format(formatter),
+                          transaction.getDate().atZone(ZoneId.systemDefault()).format(formatter),
                           PdfFont.VERY_SMALL.getFont()));
-              cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+              cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
               cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
               cell.setBorder(PdfPCell.NO_BORDER);
               table.addCell(cell); // Data
@@ -201,7 +171,7 @@ public class PdfService {
                       new Phrase(
                           transaction.getFrom().getCurrency().getSymbol(),
                           PdfFont.VERY_SMALL.getFont()));
-              cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+              cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
               cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
               cell.setBorder(PdfPCell.NO_BORDER);
               table.addCell(cell); // Simbolo valuta
@@ -209,7 +179,7 @@ public class PdfService {
               cell =
                   new PdfPCell(
                       new Phrase(transaction.getFrom().getAmount(), PdfFont.VERY_SMALL.getFont()));
-              cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+              cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
               cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
               cell.setBorder(PdfPCell.NO_BORDER);
               table.addCell(cell); // Importo
@@ -221,7 +191,7 @@ public class PdfService {
                               MathService.round(
                                   Double.parseDouble(transaction.getFrom().getCost_basis()), 2)),
                           PdfFont.VERY_SMALL.getFont()));
-              cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+              cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
               cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
               cell.setBorder(PdfPCell.NO_BORDER);
               table.addCell(cell); // Valore netto
@@ -232,7 +202,7 @@ public class PdfService {
                           String.valueOf(
                               MathService.round(Double.parseDouble(transaction.getNet_value()), 2)),
                           PdfFont.VERY_SMALL.getFont()));
-              cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+              cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
               cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
               cell.setBorder(PdfPCell.NO_BORDER);
               table.addCell(cell); // Valore netto
@@ -243,15 +213,17 @@ public class PdfService {
                           String.valueOf(
                               MathService.round(Double.parseDouble(transaction.getGain()), 2)),
                           PdfFont.VERY_SMALL.getFont()));
-              cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+              cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
               cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
               cell.setBorder(PdfPCell.NO_BORDER);
               table.addCell(cell); // Valore netto
 
               cell =
                   new PdfPCell(
-                      new Phrase(transaction.getDescription(), PdfFont.VERY_SMALL.getFont()));
-              cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+                      new Phrase(
+                          PdfUtils.cutStringToMaxLength(transaction.getDescription(), 11),
+                          PdfFont.VERY_SMALL.getFont()));
+              cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
               cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
               cell.setBorder(PdfPCell.NO_BORDER);
               table.addCell(cell); // Descrizione
@@ -281,6 +253,138 @@ public class PdfService {
               lineCell.setColspan(9);
               table.addCell(lineCell); // Linea tratteggiata
             });
+  }
+
+  private static void addFeeTransactionsRows(
+      PdfPTable table, List<CryptoInvestment> investments, Transaction transaction) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+    if (ObjectUtils.isEmpty(investments)) return;
+
+    // Imposta lo spazio prima della tabella per aumentare lo spazio tra le righe
+    table.setSpacingBefore(10f);
+    investments.sort(
+        Comparator.comparingDouble(
+            investment -> Math.abs(Double.parseDouble(investment.getAmount()))));
+
+    investments.forEach(
+        cryptoInvestment -> {
+          if (ObjectUtils.isEmpty(cryptoInvestment.getFrom_date())) return;
+          PdfPCell cell =
+              new PdfPCell(
+                  new Phrase(
+                      ObjectUtils.isEmpty(cryptoInvestment.getDate())
+                          ? "-"
+                          : cryptoInvestment
+                              .getDate()
+                              .atZone(ZoneId.systemDefault())
+                              .format(formatter),
+                      PdfFont.VERY_SMALL.getFont()));
+          cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+          cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
+          cell.setBorder(PdfPCell.NO_BORDER);
+          table.addCell(cell); // Data
+
+          cell =
+              new PdfPCell(
+                  new Phrase(
+                      ObjectUtils.isEmpty(cryptoInvestment.getFrom_date())
+                          ? "-"
+                          : cryptoInvestment
+                              .getFrom_date()
+                              .atZone(ZoneId.systemDefault())
+                              .format(formatter),
+                      PdfFont.VERY_SMALL.getFont()));
+          cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+          cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
+          cell.setBorder(PdfPCell.NO_BORDER);
+          table.addCell(cell); // Data
+
+          cell =
+              new PdfPCell(
+                  new Phrase(
+                      cryptoInvestment.getCurrency().getSymbol(), PdfFont.VERY_SMALL.getFont()));
+          cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+          cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
+          cell.setBorder(PdfPCell.NO_BORDER);
+          table.addCell(cell); // Simbolo valuta
+
+          cell =
+              new PdfPCell(
+                  new Phrase(
+                      String.valueOf(Math.abs(Double.parseDouble(cryptoInvestment.getAmount()))),
+                      PdfFont.VERY_SMALL.getFont()));
+          cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+          cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
+          cell.setBorder(PdfPCell.NO_BORDER);
+          table.addCell(cell); // Importo
+
+          cell =
+              new PdfPCell(
+                  new Phrase(
+                      String.valueOf(
+                          MathService.round(Double.parseDouble(cryptoInvestment.getValue()), 2)),
+                      PdfFont.VERY_SMALL.getFont()));
+          cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+          cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
+          cell.setBorder(PdfPCell.NO_BORDER);
+          table.addCell(cell); // Valore netto
+
+          cell =
+              new PdfPCell(
+                  new Phrase(
+                      String.valueOf(
+                          MathService.round(
+                              Double.parseDouble(cryptoInvestment.getValue())
+                                  + Double.parseDouble(cryptoInvestment.getGain()),
+                              2)),
+                      PdfFont.VERY_SMALL.getFont()));
+          cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+          cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
+          cell.setBorder(PdfPCell.NO_BORDER);
+          table.addCell(cell); // Valore netto
+
+          cell =
+              new PdfPCell(
+                  new Phrase(
+                      String.valueOf(
+                          MathService.round(Double.parseDouble(cryptoInvestment.getGain()), 2)),
+                      PdfFont.VERY_SMALL.getFont()));
+          cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+          cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
+          cell.setBorder(PdfPCell.NO_BORDER);
+          table.addCell(cell); // Valore netto
+
+          cell = new PdfPCell(new Phrase(cryptoInvestment.getInfo(), PdfFont.VERY_SMALL.getFont()));
+          cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+          cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
+          cell.setBorder(PdfPCell.NO_BORDER);
+          table.addCell(cell); // Descrizione
+
+          cell =
+              new PdfPCell(
+                  new Phrase(
+                      transaction.getFrom().getWallet().getName(), PdfFont.VERY_SMALL.getFont()));
+          cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+          cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
+          cell.setBorder(PdfPCell.NO_BORDER);
+          cell.setFixedHeight(17f); // Altezza maggiore per la riga della descrizione
+          cell.setColspan(6); // Numero di colonne della tabella
+          table.addCell(cell); // Descrizione
+
+          // Aggiungi la linea tratteggiata tra le righe
+          DottedLineSeparator dashedLine = new DottedLineSeparator();
+          dashedLine.setGap(5f);
+          dashedLine.setLineWidth(1f);
+          dashedLine.setLineColor(BaseColor.GRAY);
+          dashedLine.setAlignment(Element.ALIGN_CENTER);
+          dashedLine.setOffset(-2);
+          PdfPCell lineCell = new PdfPCell();
+          lineCell.addElement(dashedLine);
+          lineCell.setBorder(PdfPCell.NO_BORDER);
+          lineCell.setColspan(9);
+          table.addCell(lineCell); // Linea tratteggiata
+        });
   }
 
   private static void addFeeTransactionRows(PdfPTable table, Transaction transaction) {
@@ -406,94 +510,5 @@ public class PdfService {
     lineCell.setBorder(PdfPCell.NO_BORDER);
     lineCell.setColspan(9);
     table.addCell(lineCell); // Linea tratteggiata
-  }
-
-  private static void addInnerTransactionRows(PdfPTable table, List<Transaction> transactions) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-
-    // Imposta lo spazio prima della tabella per aumentare lo spazio tra le righe
-    table.setSpacingBefore(10f);
-
-    // Crea uno stream dalla lista, inverti l'ordine degli elementi e itera
-    IntStream.range(0, transactions.size())
-        .mapToObj(i -> transactions.get(transactions.size() - 1 - i))
-        .forEach(
-            transaction -> {
-              PdfPCell cell =
-                  new PdfPCell(
-                      new Phrase(
-                          ZonedDateTime.parse(transaction.getDate())
-                              .withZoneSameInstant(ZoneId.systemDefault())
-                              .format(formatter),
-                          PdfFont.VERY_SMALL.getFont()));
-              cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-              cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
-              cell.setBorder(PdfPCell.NO_BORDER);
-              table.addCell(cell); // Data
-
-              cell =
-                  new PdfPCell(
-                      new Phrase(
-                          transaction.getTo().getCurrency().getSymbol(),
-                          PdfFont.VERY_SMALL.getFont()));
-              cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-              cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
-              cell.setBorder(PdfPCell.NO_BORDER);
-              table.addCell(cell); // Simbolo valuta
-
-              cell =
-                  new PdfPCell(
-                      new Phrase(transaction.getTo().getAmount(), PdfFont.VERY_SMALL.getFont()));
-              cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-              cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
-              cell.setBorder(PdfPCell.NO_BORDER);
-              table.addCell(cell); // Importo
-
-              cell =
-                  new PdfPCell(
-                      new Phrase(
-                          String.valueOf(
-                              MathService.round(Double.parseDouble(transaction.getNet_value()), 2)),
-                          PdfFont.VERY_SMALL.getFont()));
-              cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-              cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
-              cell.setBorder(PdfPCell.NO_BORDER);
-              table.addCell(cell); // Valore netto
-
-              cell =
-                  new PdfPCell(
-                      new Phrase(
-                          ObjectUtils.isEmpty(transaction.getLabel())
-                              ? " "
-                              : transaction.getLabel().toUpperCase(),
-                          PdfFont.VERY_SMALL.getFont()));
-              cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-              cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
-              cell.setBorder(PdfPCell.NO_BORDER);
-              table.addCell(cell); // Etichetta
-
-              cell =
-                  new PdfPCell(
-                      new Phrase(transaction.getDescription(), PdfFont.VERY_SMALL.getFont()));
-              cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-              cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
-              cell.setBorder(PdfPCell.NO_BORDER);
-              cell.setFixedHeight(17f); // Altezza maggiore per la riga della descrizione
-              cell.setColspan(6); // Numero di colonne della tabella
-              table.addCell(cell); // Descrizione
-
-              // Aggiungi la linea tratteggiata tra le righe
-              DottedLineSeparator dashedLine = new DottedLineSeparator();
-              dashedLine.setGap(5f);
-              dashedLine.setLineWidth(1f);
-              dashedLine.setLineColor(BaseColor.GRAY);
-              dashedLine.setAlignment(Element.ALIGN_CENTER);
-              dashedLine.setOffset(-2);
-              PdfPCell lineCell = new PdfPCell();
-              lineCell.addElement(dashedLine);
-              lineCell.setBorder(PdfPCell.NO_BORDER);
-              lineCell.setColspan(6);
-              table.addCell(lineCell); // Linea tratteggiata
-            });
   }
 }

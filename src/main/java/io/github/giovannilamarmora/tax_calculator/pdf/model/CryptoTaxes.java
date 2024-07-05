@@ -14,6 +14,17 @@ public class CryptoTaxes {
   private String id;
   private String status;
   private Results results;
+  private Previous previous;
+
+  @Builder
+  @Data
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class Previous {
+    private String id;
+    private String status;
+    private Results results;
+  }
 
   @Builder
   @Data
