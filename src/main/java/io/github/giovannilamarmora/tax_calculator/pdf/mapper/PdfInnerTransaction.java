@@ -20,21 +20,29 @@ import java.util.stream.IntStream;
 public class PdfInnerTransaction {
 
   @LogInterceptor(type = LogTimeTracker.ActionType.MAPPER)
-  public static void addTable(Document document, List<Transaction> transactions) {
+  public static void addTable(Document document, List<Transaction> transactions)
+      throws DocumentException {
     document.newPage();
     Paragraph preface = new Paragraph();
     preface.add(new Paragraph("Transazioni entrate", PdfFont.TITLE_NORMAL.getFont()));
-    PdfUtils.addEmptyLine(preface, 1);
+    // PdfUtils.addEmptyLine(preface, 1);
     PdfUtils.addToDocument(document, preface);
+
+    // Aggiungi righe di transazioni filtrate
+    List<Transaction> crypto_deposit =
+        transactions.stream()
+            .filter(
+                transaction ->
+                    transaction.getType().equalsIgnoreCase("crypto_deposit")
+                        && transaction.getLabel() != null)
+            .toList();
+
+    if (PdfUtils.isEmptyData(crypto_deposit, document)) return;
 
     PdfPTable table = new PdfPTable(6);
     table.setWidthPercentage(100);
     table.setPaddingTop(5);
-    try {
-      table.setWidths(new int[] {3, 2, 3, 2, 2, 3}); // Ensure these values are valid
-    } catch (DocumentException e) {
-      throw new RuntimeException(e);
-    }
+    table.setWidths(new int[] {3, 2, 3, 2, 2, 3}); // Ensure these values are valid
 
     // Rimuovi i bordi della tabella
     table.getDefaultCell().setBorder(PdfPCell.NO_BORDER);
@@ -50,14 +58,6 @@ public class PdfInnerTransaction {
     PdfUtils.addTableHeader(
         table, List.of("Data", "Attivo", "Importo", "Valore (EUR)", "Tipo", "Note"));
 
-    // Aggiungi righe di transazioni filtrate
-    List<Transaction> crypto_deposit =
-        transactions.stream()
-            .filter(
-                transaction ->
-                    transaction.getType().equalsIgnoreCase("crypto_deposit")
-                        && transaction.getLabel() != null)
-            .toList();
     addInnerTransactionRows(table, crypto_deposit);
 
     PdfUtils.addToDocument(document, table);

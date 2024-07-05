@@ -11,6 +11,7 @@ import io.github.giovannilamarmora.utils.interceptors.LogTimeTracker;
 import io.github.giovannilamarmora.utils.math.MathService;
 import org.springframework.util.ObjectUtils;
 
+import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -25,6 +26,8 @@ public class PdfHoldingEndYear {
     preface.add(new Paragraph("Saldi di fine anno", PdfFont.TITLE_NORMAL.getFont()));
     PdfUtils.addEmptyLine(preface, 1);
     PdfUtils.addToDocument(document, preface);
+
+      if (PdfUtils.isEmptyData(holding, document)) return;
 
     PdfPTable table = new PdfPTable(5);
     table.setWidthPercentage(100);
@@ -82,11 +85,9 @@ public class PdfHoldingEndYear {
           cell.setBorder(PdfPCell.NO_BORDER);
           table.addCell(cell); // Data
 
+          BigDecimal amount = new BigDecimal(hold.getAmount());
           cell =
-              new PdfPCell(
-                  new Phrase(
-                      String.valueOf(MathService.round(Double.parseDouble(hold.getAmount()), 8)),
-                      PdfFont.VERY_SMALL.getFont()));
+              new PdfPCell(new Phrase(amount.abs().toPlainString(), PdfFont.VERY_SMALL.getFont()));
           cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
           cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
           cell.setBorder(PdfPCell.NO_BORDER);

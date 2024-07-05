@@ -160,4 +160,16 @@ public class PdfUtils {
       return input.substring(0, maxLength);
     }
   }
+
+  @LogInterceptor(type = LogTimeTracker.ActionType.MAPPER)
+  public static boolean isEmptyData(Object data, Document document) {
+    if (ObjectUtils.isEmpty(data)) {
+      Paragraph noData = new Paragraph();
+      noData.add(new Paragraph("Nessuna transazione", PdfFont.SMALL_GREY.getFont()));
+      PdfUtils.addEmptyLine(noData, 1);
+      PdfUtils.addToDocument(document, noData);
+      return true;
+    }
+    return false;
+  }
 }

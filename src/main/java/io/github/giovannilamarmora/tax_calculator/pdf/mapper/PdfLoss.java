@@ -29,6 +29,17 @@ public class PdfLoss {
     PdfUtils.addEmptyLine(preface, 1);
     PdfUtils.addToDocument(document, preface);
 
+    // Aggiungi righe di transazioni filtrate
+    List<Transaction> crypto_lost =
+        transactions.stream()
+            .filter(
+                transaction ->
+                    !ObjectUtils.isEmpty(transaction.getLabel())
+                        && transaction.getLabel().equalsIgnoreCase("lost"))
+            .toList();
+
+    if (PdfUtils.isEmptyData(crypto_lost, document)) return;
+
     PdfPTable table = new PdfPTable(7);
     table.setWidthPercentage(100);
     table.setPaddingTop(5);
@@ -56,14 +67,6 @@ public class PdfLoss {
             "Descrizione",
             "Nome del portafoglio"));
 
-    // Aggiungi righe di transazioni filtrate
-    List<Transaction> crypto_lost =
-        transactions.stream()
-            .filter(
-                transaction ->
-                    !ObjectUtils.isEmpty(transaction.getLabel())
-                        && transaction.getLabel().equalsIgnoreCase("lost"))
-            .toList();
     addLostTransactionRows(table, crypto_lost);
 
     PdfUtils.addToDocument(document, table);

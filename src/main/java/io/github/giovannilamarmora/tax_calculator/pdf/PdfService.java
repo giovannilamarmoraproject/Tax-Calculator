@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.io.ByteArrayOutputStream;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -57,6 +58,8 @@ public class PdfService {
       PdfInnerTransaction.addTable(document, taxRequest.getTransactions());
 
       PdfLoss.addTable(document, taxRequest.getTransactions());
+
+      PdfExpenses.addTable(document, taxRequest.getTransactions());
       document.close();
       System.out.println("PDF creato con successo!");
 
@@ -83,7 +86,8 @@ public class PdfService {
     PdfPTable table = new PdfPTable(9);
     table.setWidthPercentage(100);
     table.setPaddingTop(5);
-    table.setWidths(new float[] {2, 2, 1, 2, 1.5f, 1.5f, 2, 1, 3}); // Ensure these values are valid
+    table.setWidths(
+        new float[] {2, 2, 1, 2, 1.5f, 1.5f, 2, 1.1f, 3}); // Ensure these values are valid
 
     // Rimuovi i bordi della tabella
     table.getDefaultCell().setBorder(PdfPCell.NO_BORDER);
@@ -309,11 +313,9 @@ public class PdfService {
           cell.setBorder(PdfPCell.NO_BORDER);
           table.addCell(cell); // Simbolo valuta
 
+          BigDecimal amount = new BigDecimal(cryptoInvestment.getAmount());
           cell =
-              new PdfPCell(
-                  new Phrase(
-                      String.valueOf(Math.abs(Double.parseDouble(cryptoInvestment.getAmount()))),
-                      PdfFont.VERY_SMALL.getFont()));
+              new PdfPCell(new Phrase(amount.abs().toPlainString(), PdfFont.VERY_SMALL.getFont()));
           cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
           cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
           cell.setBorder(PdfPCell.NO_BORDER);
