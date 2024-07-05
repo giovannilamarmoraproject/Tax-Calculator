@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tax Calculator - Generate PDF Report</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style/style.css">
+    <link rel="stylesheet" href="style/glowing-button.css">
     <script src="main.js"></script>
 </head>
-<body>
+<body style="background-color: aliceblue">
 <!-- Start Landing Page -->
 <div class="landing-page">
     <header>
@@ -21,9 +22,12 @@
     <div class="content">
         <div class="container">
             <div class="info">
-                <h1>Generate Your Tax Report</h1>
+                <h1>Generate Your Crypto Tax Report</h1>
+                <br>
                 <p>Follow the Documentation step to be able to generate tax report in PDF format.</p>
-                <button onclick="generatePDF()">Generate PDF Report</button>
+                <button style="height: 45px; border-radius: 50px" class="glowing" onclick="generatePDF()">Generate PDF
+                    Report
+                </button>
             </div>
             <div class="image">
                 <img src="img/tax.png" style="width: 500px" alt="tax">
