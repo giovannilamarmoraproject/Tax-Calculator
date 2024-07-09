@@ -26,66 +26,16 @@ public class PdfCapitalGains {
         PdfUtils.createSummaryTable(
             "Riepilogo plusvalenze",
             "Riepilogo dei tuoi profitti e perdite da cessioni/vendite/scambi di criptovalute.");
-    /*PdfPTable leftTable = new PdfPTable(2);
-     leftTable.setWidthPercentage(100);
-
-    PdfPCell cell =
-         new PdfPCell(new Phrase("Riepilogo plusvalenze", PdfFont.TITLE_NORMAL.getFont()));
-     cell.setBorder(Rectangle.NO_BORDER);
-     cell.setPaddingBottom(0);
-     cell.setColspan(2);
-     leftTable.addCell(cell);
-
-     cell =
-         new PdfPCell(
-             new Phrase(
-                 "Riepilogo dei tuoi profitti e perdite da cessioni/vendite/scambi di criptovalute.",
-                 PdfFont.SUBTITLE.getFont()));
-     cell.setBorder(Rectangle.NO_BORDER);
-     cell.setPaddingBottom(10);
-     cell.setColspan(2);
-     leftTable.addCell(cell);*/
 
     capitalGainsSummary(leftTable, cryptoTaxes);
     PdfUtils.addToOuterTable(outerTable, leftTable, 0, 5);
 
-    /*PdfPCell leftCell = new PdfPCell(leftTable);
-    leftCell.setBorder(Rectangle.NO_BORDER);
-    leftCell.setPaddingRight(5);
-    outerTable.addCell(leftCell);*/
-
-    // Sezione destra
-    /*PdfPTable rightTable = new PdfPTable(2);
-    rightTable.setWidthPercentage(100);
-
-    cell =
-        new PdfPCell(new Phrase("Riassunto operazioni di margine", PdfFont.TITLE_NORMAL.getFont()));
-    cell.setBorder(Rectangle.NO_BORDER);
-    cell.setPaddingBottom(0);
-    cell.setColspan(2);
-    rightTable.addCell(cell);
-
-    cell =
-        new PdfPCell(
-            new Phrase(
-                "I guadagni da operazioni con CFD, futures e margini sono riassunti di"
-                    + "seguito. Questi guadagni NON sono stati inclusi nelle tue plusvalenze"
-                    + "e potresti invece volerli dichiarare separatamente",
-                PdfFont.SUBTITLE.getFont()));
-    cell.setBorder(Rectangle.NO_BORDER);
-    cell.setPaddingBottom(10);
-    cell.setColspan(2);
-    rightTable.addCell(cell);*/
     PdfPTable rightTable =
         PdfUtils.createSummaryTable(
             "Riassunto operazioni di margine",
             "I guadagni da operazioni con CFD, futures e margini sono riassunti di seguito. Questi guadagni NON sono stati inclusi nelle tue plusvalenze e potresti invece volerli dichiarare separatamente");
     marginOperationSummary(rightTable, cryptoTaxes);
     PdfUtils.addToOuterTable(outerTable, rightTable, 5, 0);
-    /*PdfPCell rightCell = new PdfPCell(rightTable);
-    rightCell.setBorder(Rectangle.NO_BORDER);
-    rightCell.setPaddingLeft(5);
-    outerTable.addCell(rightCell);*/
 
     PdfUtils.addToDocument(document, outerTable);
   }

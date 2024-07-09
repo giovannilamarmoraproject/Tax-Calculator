@@ -26,7 +26,7 @@ public class PdfFooterPageEvent extends PdfPageEventHelper {
     int currentPageNumber = writer.getPageNumber();
     if (currentPageNumber > 1) {
       Phrase header = new Phrase("ANNO FISCALE " + year, PdfFont.SMALL_GREY.getFont());
-      ColumnText.showTextAligned(cb, Element.ALIGN_RIGHT, header, document.right(), document.top() + 10, 0);
+      ColumnText.showTextAligned(cb, Element.ALIGN_RIGHT, header, document.right(), document.top() + 5, 0);
     }
   }
 }
