@@ -39,10 +39,10 @@ public class PdfInnerTransaction {
 
     if (PdfUtils.isEmptyData(crypto_deposit, document)) return;
 
-    PdfPTable table = new PdfPTable(6);
+    PdfPTable table = new PdfPTable(7);
     table.setWidthPercentage(100);
     table.setPaddingTop(5);
-    table.setWidths(new int[] {3, 2, 3, 2, 2, 3}); // Ensure these values are valid
+    table.setWidths(new int[] {3, 2, 3, 2, 2, 3, 3}); // Ensure these values are valid
 
     // Rimuovi i bordi della tabella
     table.getDefaultCell().setBorder(PdfPCell.NO_BORDER);
@@ -51,12 +51,20 @@ public class PdfInnerTransaction {
     PdfPCell lineCell = new PdfPCell();
     lineCell.setBorder(PdfPCell.NO_BORDER);
     lineCell.setFixedHeight(1f); // Altezza della linea grigia
-    lineCell.setColspan(6); // Numero di colonne della tabella
+    lineCell.setColspan(7); // Numero di colonne della tabella
     table.addCell(lineCell);
 
     // Aggiungi intestazione della tabella
     PdfUtils.addTableHeader(
-        table, List.of("Data", "Attivo", "Importo", "Valore (EUR)", "Tipo", "Note"));
+        table,
+        List.of(
+            "Data",
+            "Attivo",
+            "Importo",
+            "Valore (EUR)",
+            "Tipo",
+            "Descrizione",
+            "Nome del portafoglio"));
 
     addInnerTransactionRows(table, crypto_deposit);
 
@@ -133,7 +141,15 @@ public class PdfInnerTransaction {
               cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
               cell.setBorder(PdfPCell.NO_BORDER);
               cell.setFixedHeight(17f); // Altezza maggiore per la riga della descrizione
-              cell.setColspan(6); // Numero di colonne della tabella
+              table.addCell(cell); // Descrizione
+
+              cell =
+                  new PdfPCell(
+                      new Phrase(transaction.getTo().getWallet().getName(), PdfFont.VERY_SMALL.getFont()));
+              cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+              cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
+              cell.setBorder(PdfPCell.NO_BORDER);
+              cell.setFixedHeight(17f); // Altezza maggiore per la riga della descrizione
               table.addCell(cell); // Descrizione
 
               // Aggiungi la linea tratteggiata tra le righe
@@ -146,7 +162,7 @@ public class PdfInnerTransaction {
               PdfPCell lineCell = new PdfPCell();
               lineCell.addElement(dashedLine);
               lineCell.setBorder(PdfPCell.NO_BORDER);
-              lineCell.setColspan(6);
+              lineCell.setColspan(7);
               table.addCell(lineCell); // Linea tratteggiata
             });
   }

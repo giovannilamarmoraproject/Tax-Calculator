@@ -1,0 +1,33 @@
+env: ${APP_ENV:Local} # Used for Google Cloud LOG
+spring:
+  application:
+    name: Tax-Calculator
+    starter-log: true
+app:
+  version: @project.version@ # Show Project Version
+  exception:
+    stacktrace: true # Active StackTrace in Response
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    disable-swagger-default-url: true
+
+filter:
+  requestResponse:
+    enabled: true
+    shouldNotFilter: "**/swagger-ui/**,/api-docs,**/api-docs/**,*/,*/css/*,*/js/*,*/images/*,*/favicon.ico,/index.html"
+
+logging:
+  config: classpath:logback-spring.xml # classpath:logback-google.xml, classpath:logback-logtail.xml
+  level:
+    io.github.giovannilamarmora.tax_calculator: DEBUG
+    io.github.giovannilamarmora.utils: DEBUG
+    web: INFO
+    root: INFO
+    org:
+      springframework:
+        web: INFO
+      hibernate: ERROR

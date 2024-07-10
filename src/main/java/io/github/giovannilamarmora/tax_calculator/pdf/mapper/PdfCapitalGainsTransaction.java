@@ -12,15 +12,14 @@ import io.github.giovannilamarmora.utils.interceptors.LogInterceptor;
 import io.github.giovannilamarmora.utils.interceptors.LogTimeTracker;
 import io.github.giovannilamarmora.utils.logger.LoggerFilter;
 import io.github.giovannilamarmora.utils.math.MathService;
-import org.slf4j.Logger;
-import org.springframework.util.ObjectUtils;
-
 import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.IntStream;
+import org.slf4j.Logger;
+import org.springframework.util.ObjectUtils;
 
 public class PdfCapitalGainsTransaction {
 

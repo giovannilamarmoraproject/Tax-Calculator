@@ -4,7 +4,6 @@ import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
 import io.github.giovannilamarmora.tax_calculator.pdf.model.PdfFont;
 
-
 public class PdfFooterPageEvent extends PdfPageEventHelper {
 
   private final int year;
@@ -17,7 +16,8 @@ public class PdfFooterPageEvent extends PdfPageEventHelper {
   public void onEndPage(PdfWriter writer, Document document) {
     PdfContentByte cb = writer.getDirectContent();
     Phrase footer = new Phrase("Generato da Giovanni", PdfFont.SMALL_GREY.getFont());
-    ColumnText.showTextAligned(cb, Element.ALIGN_LEFT, footer, document.leftMargin(), document.bottom() - 10, 0);
+    ColumnText.showTextAligned(
+        cb, Element.ALIGN_LEFT, footer, document.leftMargin(), document.bottom() - 10, 0);
   }
 
   @Override
@@ -26,7 +26,8 @@ public class PdfFooterPageEvent extends PdfPageEventHelper {
     int currentPageNumber = writer.getPageNumber();
     if (currentPageNumber > 1) {
       Phrase header = new Phrase("ANNO FISCALE " + year, PdfFont.SMALL_GREY.getFont());
-      ColumnText.showTextAligned(cb, Element.ALIGN_RIGHT, header, document.right(), document.top() + 5, 0);
+      ColumnText.showTextAligned(
+          cb, Element.ALIGN_RIGHT, header, document.right(), document.top() + 5, 0);
     }
   }
 }

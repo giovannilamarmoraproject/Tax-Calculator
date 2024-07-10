@@ -17,6 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TaxRequest {
+    private String year;
     private String baseCurrency;
     private CryptoTaxes tax;
     private List<Transaction> transactions;
