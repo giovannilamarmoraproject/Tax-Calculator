@@ -7,9 +7,8 @@ import com.itextpdf.text.pdf.draw.DottedLineSeparator;
 import io.github.giovannilamarmora.tax_calculator.pdf.model.PdfFont;
 import io.github.giovannilamarmora.utils.interceptors.LogInterceptor;
 import io.github.giovannilamarmora.utils.interceptors.LogTimeTracker;
-import org.springframework.util.ObjectUtils;
-
 import java.util.List;
+import org.springframework.util.ObjectUtils;
 
 public class PdfUtils {
 
@@ -77,6 +76,12 @@ public class PdfUtils {
       PdfPCell subtitleCell = new PdfPCell(new Phrase(subtitle, PdfFont.SMALL_GREY.getFont()));
       subtitleCell.setBorder(Rectangle.NO_BORDER);
       subtitleCell.setPaddingBottom(10);
+      subtitleCell.setColspan(2);
+      table.addCell(subtitleCell);
+    } else {
+      PdfPCell subtitleCell = new PdfPCell(new Phrase(" ", PdfFont.SMALL_GREY.getFont()));
+      subtitleCell.setBorder(Rectangle.NO_BORDER);
+      subtitleCell.setPaddingBottom(0);
       subtitleCell.setColspan(2);
       table.addCell(subtitleCell);
     }

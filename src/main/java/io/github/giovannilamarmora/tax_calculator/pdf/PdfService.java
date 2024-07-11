@@ -5,12 +5,11 @@ import com.itextpdf.text.pdf.*;
 import io.github.giovannilamarmora.tax_calculator.app.model.TaxRequest;
 import io.github.giovannilamarmora.tax_calculator.pdf.mapper.*;
 import io.github.giovannilamarmora.utils.logger.LoggerFilter;
+import java.io.ByteArrayOutputStream;
+import java.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
-
-import java.io.ByteArrayOutputStream;
-import java.time.LocalDateTime;
 
 @Service
 public class PdfService {
@@ -43,6 +42,8 @@ public class PdfService {
       PdfCapitalGains.addCapitalGainsAndIncomeSummary(document, taxRequest.getTax());
 
       PdfIncomingGains.incomingAndCostSummary(document, taxRequest.getTax());
+
+      PdfIncomingGains.otherAndGiftSummary(document, taxRequest.getTax());
 
       PdfHeritageSummary.addTable(document, taxRequest.getTransactions());
 

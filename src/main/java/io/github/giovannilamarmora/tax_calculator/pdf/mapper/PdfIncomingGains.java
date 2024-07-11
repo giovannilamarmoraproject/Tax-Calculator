@@ -2,12 +2,8 @@ package io.github.giovannilamarmora.tax_calculator.pdf.mapper;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Phrase;
-import com.itextpdf.text.Rectangle;
-import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import io.github.giovannilamarmora.tax_calculator.pdf.model.CryptoTaxes;
-import io.github.giovannilamarmora.tax_calculator.pdf.model.PdfFont;
 import io.github.giovannilamarmora.utils.interceptors.LogInterceptor;
 import io.github.giovannilamarmora.utils.interceptors.LogTimeTracker;
 import io.github.giovannilamarmora.utils.math.MathService;
@@ -22,91 +18,47 @@ public class PdfIncomingGains {
     outerTable.setWidthPercentage(100);
     outerTable.setWidths(new int[] {1, 1});
 
-    // Sezione sinistra
-    PdfPTable leftTable = new PdfPTable(2);
-    leftTable.setWidthPercentage(100);
-
-    PdfPCell cell =
-        new PdfPCell(new Phrase("Riepilogo delle entrate", PdfFont.TITLE_NORMAL.getFont()));
-    cell.setBorder(Rectangle.NO_BORDER);
-    cell.setPaddingBottom(0);
-    cell.setColspan(2);
-    leftTable.addCell(cell);
-
-    cell =
-        new PdfPCell(
-            new Phrase(
-                "Riassunto di qualsiasi reddito che puoi aver guadagnato da vari"
-                    + "eventi cripto durante l'anno fiscale.",
-                PdfFont.SUBTITLE.getFont()));
-    cell.setBorder(Rectangle.NO_BORDER);
-    cell.setPaddingBottom(10);
-    cell.setColspan(2);
-    leftTable.addCell(cell);
+    PdfPTable leftTable =
+        PdfUtils.createSummaryTable(
+            "Riepilogo delle entrate",
+            "Riassunto di qualsiasi reddito che puoi aver guadagnato da vari eventi cripto durante l'anno fiscale.");
 
     incomingGainsSummary(leftTable, cryptoTaxes);
-    // PdfUtils.addToOuterTable(outerTable, leftTable, 0, 5);
 
-    cell = new PdfPCell(new Phrase("Riepilogo spese", PdfFont.TITLE_NORMAL.getFont()));
-    cell.setBorder(Rectangle.NO_BORDER);
-    cell.setPaddingBottom(0);
-    cell.setPaddingTop(30);
-    cell.setColspan(2);
-    leftTable.addCell(cell);
-
-    cell =
-        new PdfPCell(
-            new Phrase(
-                "Questi sono costi deducibili che non sono stati inclusi nelle tue"
-                    + "plusvalenze, è possibile essere in grado di dedurli altrove nella tua"
-                    + "dichiarazione dei redditi.",
-                PdfFont.SUBTITLE.getFont()));
-    cell.setBorder(Rectangle.NO_BORDER);
-    cell.setPaddingBottom(10);
-    cell.setColspan(2);
-    leftTable.addCell(cell);
-
-    costSummary(leftTable, cryptoTaxes);
     PdfUtils.addToOuterTable(outerTable, leftTable, 0, 5);
 
-    /*PdfPCell leftCell = new PdfPCell(leftTable);
-    leftCell.setBorder(Rectangle.NO_BORDER);
-    leftCell.setPaddingRight(5);
-    outerTable.addCell(leftCell);*/
+    PdfPTable rightTable =
+        PdfUtils.createSummaryTable(
+            "Riepilogo spese",
+            "Questi sono costi deducibili che non sono stati inclusi nelle tue plusvalenze, è possibile essere in grado di dedurli altrove nella tua dichiarazione dei redditi.");
+    costSummary(rightTable, cryptoTaxes);
+    PdfUtils.addToOuterTable(outerTable, rightTable, 5, 0);
 
-    // Sezione destra
-    /*PdfPTable rightTable = new PdfPTable(2);
-    rightTable.setWidthPercentage(100);
+    document.add(outerTable);
+  }
 
-    cell =
-        new PdfPCell(
-            new Phrase("Regali, donazioni e attivi perduti", PdfFont.TITLE_NORMAL.getFont()));
-    cell.setBorder(Rectangle.NO_BORDER);
-    cell.setPaddingBottom(0);
-    cell.setColspan(2);
-    rightTable.addCell(cell);
+  @LogInterceptor(type = LogTimeTracker.ActionType.MAPPER)
+  public static void otherAndGiftSummary(Document document, CryptoTaxes cryptoTaxes)
+      throws DocumentException {
+    PdfPTable outerTable = new PdfPTable(2);
+    outerTable.setWidthPercentage(100);
+    outerTable.setWidths(new int[] {1, 1});
 
-    cell =
-        new PdfPCell(
-            new Phrase(
-                "Questa sezione mostra il valore di eventuali regali, donazioni o"
-                    + "monete perse. Non si realizzano guadagni per queste transazioni.",
-                PdfFont.SUBTITLE.getFont()));
-    cell.setBorder(Rectangle.NO_BORDER);
-    cell.setPaddingBottom(10);
-    cell.setColspan(2);
-    rightTable.addCell(cell);*/
+    PdfPTable leftTable =
+        PdfUtils.createSummaryTable(
+            "Varie riepilogo",
+            "Questa sezione mostra il valore di misc. transazioni contrassegnate.");
+
+    otherGainsSummary(leftTable, cryptoTaxes);
+
+    PdfUtils.addToOuterTable(outerTable, leftTable, 0, 5);
+
     PdfPTable rightTable =
         PdfUtils.createSummaryTable(
             "Regali, donazioni e attivi perduti",
             "Questa sezione mostra il valore di eventuali regali, donazioni o monete perse. Non si realizzano guadagni per queste transazioni.");
     giftSummary(rightTable, cryptoTaxes);
     PdfUtils.addToOuterTable(outerTable, rightTable, 5, 0);
-
-    /*PdfPCell rightCell = new PdfPCell(rightTable);
-    rightCell.setBorder(Rectangle.NO_BORDER);
-    rightCell.setPaddingLeft(5);
-    outerTable.addCell(rightCell);*/
 
     document.add(outerTable);
   }
@@ -140,7 +92,12 @@ public class PdfIncomingGains {
         null);
     PdfUtils.addSummaryTableRow(
         table,
-        "Loan Interest",
+        "Salary",
+        "€" + MathService.round(Double.parseDouble(results.getIncome().getSalary()), 2),
+        null);
+    PdfUtils.addSummaryTableRow(
+        table,
+        "Lending interest",
         "€" + MathService.round(Double.parseDouble(results.getIncome().getLending_interest()), 2),
         null);
     PdfUtils.addSummaryTableRow(
@@ -152,6 +109,50 @@ public class PdfIncomingGains {
         table,
         "Total",
         "€" + MathService.round(Double.parseDouble(results.getIncome().getTotal()), 2),
+        null);
+  }
+
+  @LogInterceptor(type = LogTimeTracker.ActionType.MAPPER)
+  private static void otherGainsSummary(PdfPTable table, CryptoTaxes cryptoTaxes) {
+    CryptoTaxes.Results results =
+        ObjectUtils.isEmpty(cryptoTaxes.getResults())
+            ? cryptoTaxes.getPrevious().getResults()
+            : cryptoTaxes.getResults();
+
+    PdfUtils.addSummaryTableRow(
+        table,
+        "Cashback",
+        "€" + MathService.round(Double.parseDouble(results.getMisc().getCashback()), 2),
+        null);
+    PdfUtils.addSummaryTableRow(
+        table,
+        "Fee refund",
+        "€" + MathService.round(Double.parseDouble(results.getMisc().getFee_refund()), 2),
+        null);
+    PdfUtils.addSummaryTableRow(
+        table,
+        "Tax",
+        "€" + MathService.round(Double.parseDouble(results.getMisc().getTax()), 2),
+        null);
+    PdfUtils.addSummaryTableRow(
+        table,
+        "Loan",
+        "€" + MathService.round(Double.parseDouble(results.getMisc().getLoan()), 2),
+        null);
+    PdfUtils.addSummaryTableRow(
+        table,
+        "Loan repayment",
+        "€" + MathService.round(Double.parseDouble(results.getMisc().getLoan_repayment()), 2),
+        null);
+    PdfUtils.addSummaryTableRow(
+        table,
+        "Margin loan",
+        "€" + MathService.round(Double.parseDouble(results.getMisc().getMargin_loan()), 2),
+        null);
+    PdfUtils.addSummaryTableRow(
+        table,
+        "Margin repayment",
+        "€" + MathService.round(Double.parseDouble(results.getMisc().getMargin_repayment()), 2),
         null);
   }
 
@@ -169,12 +170,12 @@ public class PdfIncomingGains {
         null);
     PdfUtils.addSummaryTableRow(
         table,
-        "Margin trade fee",
+        "Margin fee",
         "€" + MathService.round(Double.parseDouble(results.getExpenses().getMargin_fee()), 2),
         null);
     PdfUtils.addSummaryTableRow(
         table,
-        "Margin interest fee",
+        "Loan fee",
         "€" + MathService.round(Double.parseDouble(results.getExpenses().getLoan_fee()), 2),
         null);
     PdfUtils.addSummaryTableRow(
