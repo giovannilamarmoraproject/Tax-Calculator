@@ -1,23 +1,16 @@
 package io.github.giovannilamarmora.tax_calculator.app;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.StreamReadFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfWriter;
 import io.github.giovannilamarmora.tax_calculator.app.model.TaxRequest;
 import io.github.giovannilamarmora.tax_calculator.pdf.PdfService;
-import io.github.giovannilamarmora.tax_calculator.pdf.model.CryptoTaxes;
-import io.github.giovannilamarmora.utils.generic.Response;
 import io.github.giovannilamarmora.utils.interceptors.LogInterceptor;
 import io.github.giovannilamarmora.utils.interceptors.LogTimeTracker;
-import io.github.giovannilamarmora.utils.interceptors.correlationID.CorrelationIdUtils;
 import io.github.giovannilamarmora.utils.utilities.MapperUtils;
+import java.nio.charset.StandardCharsets;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.multipart.FilePart;
@@ -25,14 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.RequestPart;
 import reactor.core.publisher.Mono;
-
-import java.io.ByteArrayOutputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
-import static com.fasterxml.jackson.core.StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION;
 
 @Service
 public class AppService {
@@ -74,11 +59,12 @@ public class AppService {
 
   // Metodo di utilità per convertire una stringa JSON in un oggetto TaxRequest
   private TaxRequest parseJsonToTaxRequest(String jsonString) {
-    ObjectMapper objectMapper = MapperUtils.mapper().failOnUnknownProprieties().enableJavaTime().build();
+    ObjectMapper objectMapper =
+        MapperUtils.mapper().failOnUnknownProprieties().enableJavaTime().build();
     try {
       return objectMapper.readValue(jsonString, TaxRequest.class);
     } catch (JsonProcessingException e) {
-       // return objectMapper.convertValue(jsonString, TaxRequest.class);
+      // return objectMapper.convertValue(jsonString, TaxRequest.class);
       throw new IllegalArgumentException("Invalid JSON data", e);
     }
   }
