@@ -25,7 +25,8 @@ async function generatePDF() {
             );
 
             if (!response.ok) {
-                throw new Error(`Errore durante la richiesta: ${response.statusText}`);
+                window.location.href = "/error.html"
+                throw new Error(`Error durante la richiesta: ${response.statusText}`);
             }
 
             const blob = await response.blob();

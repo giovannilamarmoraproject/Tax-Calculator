@@ -15,7 +15,7 @@ public class PdfFooterPageEvent extends PdfPageEventHelper {
   @Override
   public void onEndPage(PdfWriter writer, Document document) {
     PdfContentByte cb = writer.getDirectContent();
-    Phrase footer = new Phrase("Generato da Giovanni", PdfFont.SMALL_GREY.getFont());
+    Phrase footer = new Phrase("Generato da Koinly", PdfFont.SMALL_GREY.getFont());
     ColumnText.showTextAligned(
         cb, Element.ALIGN_LEFT, footer, document.leftMargin(), document.bottom() - 10, 0);
   }

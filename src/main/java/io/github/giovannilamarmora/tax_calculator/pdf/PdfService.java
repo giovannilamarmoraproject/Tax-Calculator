@@ -64,7 +64,8 @@ public class PdfService {
       LOG.info("PDF creato con successo!");
 
     } catch (DocumentException e) {
-      e.printStackTrace();
+      LOG.error("Exception message is {}", e.getMessage());
+      throw new PDFException(e.getMessage());
     }
 
     return byteArrayOutputStream.toByteArray();
