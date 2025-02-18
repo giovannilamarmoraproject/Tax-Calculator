@@ -5,12 +5,12 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.1</version>
+        <version>3.4.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>io.github.giovannilamarmora</groupId>
     <artifactId>tax-calculator</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>Tax Calculator</name>
     <description>Demo project for Spring Boot</description>
     <url/>
@@ -43,7 +43,7 @@
         <dependency>
             <groupId>io.github.giovannilamarmora.utils</groupId>
             <artifactId>utils-code</artifactId>
-            <version>1.0.24</version>
+            <version>1.0.59</version>
         </dependency>
         <dependency>
             <groupId>com.itextpdf</groupId>
@@ -53,7 +53,7 @@
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
-            <version>3.0.2</version>
+            <version>3.0.3</version>
         </dependency>
     </dependencies>
 

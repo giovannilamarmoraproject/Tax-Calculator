@@ -1,0 +1,32 @@
+version: '3.9'
+services:
+  access-sphere:
+    container_name: tax-calculator
+    image: giovannilamarmora/tax-calculator:${APP_VERSION}
+    hostname: tax.calculator
+    ports:
+      - "8008:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=deploy
+      - APP_ENV=${APP_ENV}
+      - LOGGING_LEVEL=${LOGGING_LEVEL}
+      - LOGBACK_FILE=${LOGBACK_FILE}
+      - GCLOUD_PROJECT=${GCLOUD_PROJECT}
+      - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
+    volumes:
+      # Monta il volume "microservice" nella cartella /secrets (in sola lettura)
+      - microservice:/secrets:ro
+    deploy:
+      replicas: 1  # Cambia il numero di repliche a seconda delle tue esigenze
+    networks:
+      docker-network:
+        aliases:
+          - tax.calculator
+
+networks:
+  docker-network:
+    external: true
+
+volumes:
+  microservice:
+    external: true

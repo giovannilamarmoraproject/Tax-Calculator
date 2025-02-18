@@ -6,16 +6,24 @@
     <title>Tax Calculator - Generate PDF Report</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/glowing-button.css">
-    <script src="main.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="./config/config.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/access-sphere.js"></script>
 </head>
 <body style="background-color: aliceblue">
 <!-- Start Landing Page -->
-<div class="landing-page">
+<div id="landing-page" class="landing-page" style="display: none">
     <header>
         <div class="container">
             <a href="#" class="logo">Tax <b>Calculator</b></a>
             <ul class="links">
-                <li>Get Started</li>
+                <li><a href="documentation/overview.html" class="glowing" style="color: white; margin-top: 0px;">Get
+                    Started</a>
+                </li>
+                <li style="padding: 11px 22px;"><a class="logout" id="logout-btn" href="#" onclick="logout()"
+                                                   style="color: white;">Logout</a
+                ></li>
             </ul>
         </div>
     </header>
