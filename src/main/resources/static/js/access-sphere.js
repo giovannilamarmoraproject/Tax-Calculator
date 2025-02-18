@@ -135,6 +135,7 @@
     })
       .then((response) => {
         fetchHeader(response.headers);
+        console.log(response);
         if (response.ok) {
           const locationHeader = response.headers.get("Location");
           const redirectUrl =
