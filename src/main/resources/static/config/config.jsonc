@@ -1,7 +1,7 @@
 {
   "baseUrl": "https://access.sphere.service.giovannilamarmora.com",
-  "client_id": "client_id=LINKATUTTO-AUTH-01",
-  "redirect_uri": "redirect_uri=https://linkatutto.giovannilamarmora.com",
+  "client_id": "client_id=TAX-CALCULATOR-01",
+  "redirect_uri": "redirect_uri=https://tax-calculator.giovannilamarmora.com",
   "authorize": "/v1/oAuth/2.0/authorize",
   "token": "/v1/oAuth/2.0/token",
   "logout": "/v1/oAuth/2.0/logout",
