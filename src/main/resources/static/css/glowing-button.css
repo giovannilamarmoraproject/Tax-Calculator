@@ -1,0 +1,64 @@
+.glowing {
+        z-index: 1;
+        padding: 12px 24px;
+        border-radius: 50px;
+        display: inline-block;
+        color: #fff !important;
+        font-weight: 500;
+        font-size: 14px;
+        text-transform: uppercase;
+        text-decoration: none !important;
+        box-sizing: border-box;
+        background: linear-gradient(90deg, #03a9f4, #f441a5, #ffeb3b, #03a9f4);
+        background-size: 400%;
+        cursor: pointer;
+        margin-top: 35px;
+        position: relative;
+        transition: 0.2s;
+      }
+
+      @keyframes animate {
+        0% {
+          background-position: 0%;
+        }
+
+        100% {
+          background-position: 400%;
+        }
+      }
+
+      .glowing:hover {
+        z-index: 1;
+        animation: animate 8s linear infinite;
+      }
+
+      .glowing:before {
+        z-index: 1;
+        content: "";
+        position: absolute;
+        display: block;
+        top: -5px;
+        left: -5px;
+        bottom: -5px;
+        right: -5px;
+        z-index: -1;
+        background: linear-gradient(90deg, #03a9f4, #f441a5, #ffeb3b, #03a9f4);
+        background-size: 400%;
+        border-radius: 50px;
+        opacity: 0;
+        transition: opacity 1s, filter 1s;
+      }
+
+      .glowing:hover:before {
+        filter: blur(20px);
+        opacity: 1;
+        animation: animate 8s linear infinite;
+      }
+
+      .footer {
+        font-size: 14px;
+        color: rgba(69, 80, 86, 0.74);
+        line-height: 18px;
+        text-align: center;
+        margin: 20px 0 0;
+      }
