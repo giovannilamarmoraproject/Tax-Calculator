@@ -203,3 +203,20 @@ svg {
     transform: translateY(800px);
   }
 }
+
+@media (max-width: 767px) {
+  .text {
+    font-size: small;
+    border-radius: 10px;
+    width: fit-content;
+    text-align: center;
+    z-index: 0;
+    position: relative;
+    background-color: white;
+    padding: 2rem;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 7px 7px 10px #27414c;
+  }
+}
