@@ -130,6 +130,8 @@
       method: "GET",
       headers: headers,
       redirect: "follow",
+      //redirect: "manual", // Oppure 'follow' se il server supporta i redirect
+      cache: "no-store",
       mode: "cors", // no-cors, *cors, same-origin
       //credentials: "include",
     })
@@ -138,11 +140,14 @@
         console.log(response);
         if (response.ok) {
           const locationHeader = response.headers.get("Location");
+          console.log(locationHeader);
           const redirectUrl =
             locationHeader ?? (response.url !== url ? response.url : null);
+           console.log(redirectUrl);
 
           if (redirectUrl) {
             window.location.href = redirectUrl;
+            return;
           }
         } else if (!response.ok) {
           localStorage.clear();
@@ -156,7 +161,8 @@
         if (landing_page) landing_page.style.display = "block";
       })
       .catch((error) => {
-        window.location.href = window.location.origin + "/error.html";
+        console.error("Fetch error:", error);
+        //window.location.href = window.location.origin + "/error.html";
       });
   }
 
