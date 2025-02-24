@@ -5,9 +5,9 @@ on:
     branches: [ master ]
 
 env:
-  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+  DOCKER_USERNAME: ${{ vars.DOCKER_USERNAME }}
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-  DOCKER_REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
+  DOCKER_REPOSITORY: ${{ vars.DOCKER_REPOSITORY }}
 
 jobs:
   checkout-and-setup:
@@ -64,8 +64,6 @@ jobs:
   build-and-push-docker:
     name: 🚀 Build & Push Docker Image
     runs-on: ubuntu-latest
-    environment:
-      name: access-sphere
     needs: [ install-test-and-build, docker-login ]
     steps:
       - uses: actions/checkout@v4.2.2
