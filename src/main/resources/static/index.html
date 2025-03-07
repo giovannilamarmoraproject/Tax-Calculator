@@ -1,48 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tax Calculator - Generate PDF Report</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/glowing-button.css">
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/glowing-button.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="./config/config.js"></script>
     <script src="js/main.js"></script>
     <script src="js/access-sphere.js"></script>
-</head>
-<body style="background-color: aliceblue">
-<!-- Start Landing Page -->
-<div id="landing-page" class="landing-page" style="display: none">
-    <header>
+  </head>
+  <body style="background-color: aliceblue">
+    <!-- Start Landing Page -->
+    <div id="landing-page" class="landing-page" style="display: none">
+      <header>
         <div class="container">
-            <a href="#" class="logo">Tax <b>Calculator</b></a>
-            <ul class="links">
-                <li><a href="documentation/overview.html" class="glowing" style="color: white; margin-top: 0px;">Get
-                    Started</a>
-                </li>
-                <li style="padding: 11px 22px;"><a class="logout" id="logout-btn" href="#" onclick="logout()"
-                                                   style="color: white;">Logout</a
-                ></li>
-            </ul>
+          <a href="#" class="logo">Tax <b>Calculator</b></a>
+          <ul class="links">
+            <li>
+              <a
+                href="documentation/overview.html"
+                class="glowing"
+                style="color: white; margin-top: 0px"
+                >Get Started</a
+              >
+            </li>
+            <li style="padding: 11px 22px">
+              <a
+                class="logout"
+                id="logout-btn"
+                href="#"
+                onclick="logout()"
+                style="color: white"
+                >Logout</a
+              >
+            </li>
+          </ul>
         </div>
-    </header>
-    <div class="content">
+      </header>
+      <div class="content">
         <div class="container">
-            <div class="info">
-                <h1>Generate Your Crypto Tax Report</h1>
-                <br>
-                <p>Follow the Documentation step to be able to generate tax report in PDF format.</p>
-                <button style="height: 45px; border-radius: 50px" class="glowing" onclick="generatePDF()">Generate PDF
-                    Report
-                </button>
-            </div>
-            <div class="image">
-                <img src="img/tax.png" style="width: 500px" alt="tax">
-            </div>
+          <div class="info">
+            <h1>Generate Your Crypto Tax Report</h1>
+            <br />
+            <p>
+              Follow the Documentation step to be able to generate tax report in
+              PDF format.
+            </p>
+            <button
+              style="height: 45px; border-radius: 50px"
+              class="glowing"
+              onclick="generatePDF()"
+            >
+              Generate PDF Report
+            </button>
+          </div>
+          <div class="image">
+            <img src="img/tax.png" style="width: 500px" alt="tax" />
+          </div>
         </div>
+      </div>
     </div>
-</div>
-<!-- End Landing Page -->
-</body>
+    <!-- End Landing Page -->
+  </body>
 </html>
