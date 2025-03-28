@@ -149,8 +149,9 @@
           }
         } else if (!response.ok) {
           localStorage.clear();
-          console.error("Authorization check failed.");
-          location.reload(true);
+          console.error("Authorization check failed.", response);
+          if (response.status != 403 && response.status != 401) location.reload(true);
+          window.location.href = window.location.origin + "/error.html";
         }
         return response.json();
       })
