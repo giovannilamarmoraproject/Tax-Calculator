@@ -11,7 +11,7 @@ const localConfig = {
   scope: "scope=openid",
   login_type_bearer: "type=bearer",
   login_type_google: "type=google",
-  response_type: "response_type=code",
+  response_type: "response_type=token",
   grant_type: "grant_type=authorization_code",
 };
 
@@ -28,7 +28,7 @@ const fallbackConfig = {
   scope: "scope=openid",
   login_type_bearer: "type=bearer",
   login_type_google: "type=google",
-  response_type: "response_type=code",
+  response_type: "response_type=token",
   grant_type: "grant_type=authorization_code",
 };
 
