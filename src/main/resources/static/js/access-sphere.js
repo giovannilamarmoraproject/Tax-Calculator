@@ -59,7 +59,8 @@
         "Content-Type": "application/json",
         ...getSavedHeaders(),
       },
-      credentials: "same-origin",
+      credentials: "include",
+      //credentials: "same-origin",
     })
       .then((response) => {
         fetchHeader(response.headers);
