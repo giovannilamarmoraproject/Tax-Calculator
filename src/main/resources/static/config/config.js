@@ -73,7 +73,6 @@ async function loadConfig() {
  * ---------------------------------
  */
 function initScriptAccessSphere(config) {
-  console.log("Caricamento Script");
   window.accessSphereConfig = {
     client_id: config.client_id,
     redirect_uri: config.redirect_uri,
