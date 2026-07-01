@@ -6,7 +6,7 @@ const localConfig = {
 };
 
 const fallbackConfig = {
-  baseUrl: "https://access.sphere.service.giovannilamarmora.com",
+  baseUrl: "https://access-sphere.giovannilamarmora.com",
   access_sphere_script: "/app/authentication/auth.js",
   client_id: "TAX-CALCULATOR-01",
   redirect_uri: "https://tax-calculator.giovannilamarmora.com",
