@@ -1,66 +1,376 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tax Calculator - Generate PDF Report</title>
-    <link rel="stylesheet" href="css/style.css" />
-    <link rel="stylesheet" href="css/glowing-button.css" />
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Tax Calculator - Premium</title>
+    <!-- External CSS kept for JS compatibility -->
+    <link rel="stylesheet" href="css/style.css"/>
+    <link rel="stylesheet" href="css/glowing-button.css"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,slnt,wdth,wght,ROND@6..144,-10..0,25..151,1..1000,100&display=swap"
+          rel="stylesheet">
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="./config/config.js"></script>
     <script src="js/main.js"></script>
     <script src="js/access-sphere.js"></script>
-  </head>
-  <body style="background-color: aliceblue">
-    <!-- Start Landing Page -->
-    <div id="landing-page" class="landing-page" style="display: none">
-      <header>
-        <div class="container">
-          <a href="#" class="logo">Tax <b>Calculator</b></a>
-          <ul class="links">
-            <li>
-              <a
-                href="documentation/overview.html"
-                class="glowing"
-                style="color: white; margin-top: 0px"
-                >Get Started</a
-              >
-            </li>
-            <li style="padding: 11px 22px">
-              <a
-                class="logout clickable"
-                onclick="logout()"
-                id="logout-btn"
-                style="color: white"
-                >Logout</a
-              >
-            </li>
-          </ul>
+
+    <style>
+        :root {
+          --dark-bg: #09090b;
+          --glass-bg: rgba(255, 255, 255, 0.03);
+          --glass-border: rgba(255, 255, 255, 0.1);
+          --text-primary: #ffffff;
+          --text-secondary: #a1a1aa;
+          --accent-gradient: linear-gradient(135deg, #3B82F6, #8B5CF6);
+        }
+
+        html, body {
+          margin: 0;
+          padding: 0;
+          width: 100%;
+          overflow-x: hidden !important; /* Previene ogni scroll orizzontale su mobile */
+        }
+
+        body.glass-ui {
+          background-color: var(--dark-bg) !important;
+          font-family: 'Google Sans Flex', sans-serif !important;
+          color: var(--text-primary);
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+          position: relative;
+        }
+
+        /* Animated Glowing Background Orbs */
+        .bg-orb {
+          position: fixed; /* Modificato da absolute a fixed per evitare che estendano la pagina causando scroll */
+          border-radius: 50%;
+          filter: blur(100px);
+          z-index: 0;
+          animation: float 20s infinite ease-in-out alternate;
+        }
+
+        .orb-1 {
+          top: -10%; left: -5%; width: 400px; height: 400px;
+          background: rgba(59, 130, 246, 0.3);
+        }
+
+        .orb-2 {
+          bottom: -20%; right: -10%; width: 500px; height: 500px;
+          background: rgba(139, 92, 246, 0.25);
+          animation-delay: -5s;
+        }
+
+        @keyframes float {
+          0% { transform: translate(0, 0) scale(1); }
+          100% { transform: translate(50px, 50px) scale(1.1); }
+        }
+
+        .glass-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 1.5rem 5%;
+          background: rgba(9, 9, 11, 0.5);
+          backdrop-filter: blur(24px);
+          -webkit-backdrop-filter: blur(24px);
+          border-bottom: 1px solid var(--glass-border);
+          position: fixed;
+          top: 0;
+          width: 100%;
+          box-sizing: border-box;
+          z-index: 20;
+        }
+
+        .glass-logo {
+          font-family: 'Google Sans Flex', sans-serif;
+          font-weight: 800;
+          font-size: 1.5rem;
+          color: var(--text-primary);
+          text-decoration: none;
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          letter-spacing: 0.5px;
+        }
+
+        .glass-logo img {
+          width: 40px;
+          height: 40px;
+        }
+
+        .glass-nav {
+          display: flex;
+          gap: 1.5rem;
+          align-items: center;
+        }
+
+        .glass-nav-link {
+          color: var(--text-secondary);
+          text-decoration: none;
+          font-weight: 500;
+          font-size: 0.95rem;
+          padding: 0.4rem 0.8rem;
+          border-radius: 8px;
+          transition: all 0.3s ease;
+        }
+
+        .glass-nav-link:hover {
+          color: var(--text-primary);
+          background: rgba(255, 255, 255, 0.05);
+        }
+
+        .glass-btn-outline {
+          padding: 0.5rem 1.2rem;
+          border-radius: 99px;
+          border: 1px solid var(--glass-border);
+          background: var(--glass-bg);
+          color: var(--text-primary);
+          font-family: 'Google Sans Flex', sans-serif;
+          font-weight: 600;
+          font-size: 0.95rem;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .glass-btn-outline:hover {
+          background: rgba(255,255,255,0.1);
+          border-color: rgba(255,255,255,0.3);
+        }
+
+        #landing-page {
+          width: 100%;
+        }
+
+        .bento-main {
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 80px 5% 40px; /* Ripristinato 5% di padding laterale */
+          box-sizing: border-box;
+          z-index: 10;
+          position: relative;
+          width: 100%;
+        }
+
+        .bento-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          grid-template-rows: auto;
+          gap: 2rem;
+          max-width: 1200px;
+          width: 100%;
+        }
+
+        .bento-card {
+          background: var(--glass-bg);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border: 1px solid var(--glass-border);
+          border-radius: 24px;
+          padding: 2.5rem;
+          transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .bento-card:hover {
+          transform: translateY(-5px);
+          border-color: rgba(255, 255, 255, 0.2);
+          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Spans for asymmetric layout */
+        .card-hero {
+          grid-column: span 2;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
+
+        .card-image {
+          grid-column: span 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0;
+          overflow: hidden;
+        }
+
+        .card-image img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          opacity: 0.8;
+        }
+
+        .card-action {
+          grid-column: span 3;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          background: rgba(59, 130, 246, 0.05);
+          border-color: rgba(59, 130, 246, 0.2);
+        }
+
+        h1 {
+          font-family: 'Google Sans Flex', sans-serif;
+          font-size: 3rem;
+          font-weight: 800;
+          line-height: 1.15;
+          margin: 0 0 1.2rem;
+          background: linear-gradient(135deg, #ffffff 30%, #a1a1aa 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          text-shadow: 0 0 30px rgba(255,255,255,0.1);
+        }
+
+        p {
+          font-size: 1.05rem;
+          color: var(--text-secondary);
+          line-height: 1.6;
+          margin: 0;
+          font-weight: 400;
+        }
+
+        .glass-btn-primary {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0.9rem 2.2rem;
+          border-radius: 99px;
+          background: var(--accent-gradient);
+          color: white;
+          font-family: 'Google Sans Flex', sans-serif;
+          font-weight: 700;
+          font-size: 1.05rem;
+          border: none;
+          cursor: pointer;
+          box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4);
+          transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .glass-btn-primary:hover {
+          transform: scale(1.05);
+          box-shadow: 0 15px 35px rgba(139, 92, 246, 0.6);
+        }
+
+        @media (max-width: 900px) {
+          .bento-main {
+            justify-content: flex-start; /* Evita il clipping su mobile se l'altezza sfora */
+            padding: 100px 5% 40px; /* Garanzia del padding 5% laterale anche su mobile */
+          }
+          .bento-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+          }
+          .bento-card {
+            padding: 1.8rem;
+          }
+          .card-hero, .card-image, .card-action {
+            grid-column: span 1;
+          }
+          .card-action {
+            flex-direction: column;
+            gap: 1.5rem;
+            text-align: center;
+          }
+          .card-image img {
+            max-height: 200px;
+            object-fit: contain;
+          }
+          h1 {
+            font-size: 2.2rem;
+          }
+          .glass-header {
+            padding: 1rem 5%;
+            justify-content: space-between;
+          }
+          .glass-logo {
+            font-size: 1.1rem; /* Rimpicciolito lato mobile */
+            gap: 0.5rem;
+          }
+          .logo-text {
+            display: none; /* Nasconde il testo del logo su mobile per far spazio al menu */
+          }
+          .glass-logo img {
+            width: 32px; /* Tornato a 32px su mobile per spazio */
+            height: 32px;
+          }
+          .glass-nav {
+            gap: 0.5rem;
+          }
+          .glass-nav-link {
+            font-size: 0.9rem;
+            padding: 0.4rem 0.6rem;
+          }
+          .glass-btn-outline {
+            padding: 0.5rem 1rem; /* Ridotto bottone header mobile */
+            font-size: 0.9rem;
+          }
+          .glass-btn-primary {
+            width: 100%;
+          }
+        }
+    </style>
+</head>
+<body class="glass-ui">
+
+<div class="bg-orb orb-1"></div>
+<div class="bg-orb orb-2"></div>
+
+<!-- Start Landing Page -->
+<div id="landing-page" style="display: none; width: 100%; height: 100%;">
+    <header class="glass-header">
+        <a href="#" class="glass-logo">
+            <img src="https://raw.githubusercontent.com/giovannilamarmora/giovannilamarmora.github.io/refs/heads/master/assets/icons/svg/rounded_white.svg"
+                 alt="Giovanni Lamarmora Logo">
+            <span class="logo-text">Tax Calculator</span>
+        </a>
+        <nav class="glass-nav">
+            <a href="documentation/overview.html" class="glass-nav-link">Docs</a>
+            <button class="glass-btn-outline" onclick="logout()" id="logout-btn">Logout</button>
+        </nav>
+    </header>
+
+    <main class="bento-main">
+        <div class="bento-grid">
+
+            <!-- Bento Card 1: Text Hero -->
+            <div class="bento-card card-hero">
+                <h1>Next-Gen Crypto<br>Tax Engine.</h1>
+                <p>
+                    Say goodbye to messy spreadsheets. Our advanced intelligence engine automatically calculates your
+                    crypto gains, tracks your portfolio history, and generates an official, perfectly formatted
+                    IRS-compliant PDF report in seconds.
+                </p>
+            </div>
+
+            <!-- Bento Card 2: Visual -->
+            <div class="bento-card card-image">
+                <img src="img/tax.png" alt="tax illustration"
+                     onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIiB2aWV3Qm94PSIwIDAgMzAwIDMwMCI+PHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIzMDAiIGZpbGw9IiMzQjgyRjYiIGZpbGwtb3BhY2l0eT0iMC4xIi8+PHRleHQgeD0iMTUwIiB5PSIxNTUiIGZvbnQtZmFtaWx5PSJPdXRmaXQsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiM4QjVDRjYiIHRleHQtYW5jaG9yPSJtaWRkbGUiPldlYjMgQW5hbHl0aWNzPC90ZXh0Pjwvc3ZnPg=='"/>
+            </div>
+
+            <!-- Bento Card 3: Action -->
+            <div class="bento-card card-action">
+                <div>
+                    <h2 style="font-family: 'Google Sans Flex'; margin: 0 0 0.5rem; color: #fff; font-size: 1.5rem; font-weight: 700;">
+                        Ready to finalize?</h2>
+                    <p style="font-size: 0.95rem;">Export your fully compiled, ready-to-file tax report.</p>
+                </div>
+                <button class="glass-btn-primary" onclick="generatePDF()">
+                    Generate PDF Report
+                </button>
+            </div>
+
         </div>
-      </header>
-      <div class="content">
-        <div class="container">
-          <div class="info">
-            <h1>Generate Your Crypto Tax Report</h1>
-            <br />
-            <p>
-              Follow the Documentation step to be able to generate tax report in
-              PDF format.
-            </p>
-            <button
-              style="height: 45px; border-radius: 50px"
-              class="glowing"
-              onclick="generatePDF()"
-            >
-              Generate PDF Report
-            </button>
-          </div>
-          <div class="image">
-            <img src="img/tax.png" style="width: 500px" alt="tax" />
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- End Landing Page -->
-  </body>
+    </main>
+</div>
+<!-- End Landing Page -->
+</body>
 </html>
