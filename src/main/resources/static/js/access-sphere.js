@@ -12,8 +12,15 @@
   document.addEventListener("ACCESS_SPHERE_AUTH", (event) => {
     const { success, data, error } = event.detail;
     if (success && !error) {
-      const landing_page = document.getElementById("landing-page");
-      if (landing_page) landing_page.style.display = "block";
+      const template = document.getElementById("protected-template");
+      const appRoot = document.getElementById("app-root");
+      if (template && appRoot) {
+        appRoot.appendChild(template.content.cloneNode(true));
+        template.remove();
+      } else {
+        const landing_page = document.getElementById("landing-page");
+        if (landing_page) landing_page.style.display = "block";
+      }
     } else {
       window.location.href = window.location.origin + "/error.html";
     }
@@ -27,8 +34,15 @@
   document.addEventListener("ACCESS_SPHERE_TOKEN", (event) => {
     const { success, data, error } = event.detail;
     if (success && !error) {
-      const landing_page = document.getElementById("landing-page");
-      if (landing_page) landing_page.style.display = "block";
+      const template = document.getElementById("protected-template");
+      const appRoot = document.getElementById("app-root");
+      if (template && appRoot) {
+        appRoot.appendChild(template.content.cloneNode(true));
+        template.remove();
+      } else {
+        const landing_page = document.getElementById("landing-page");
+        if (landing_page) landing_page.style.display = "block";
+      }
     } else {
       window.location.href = window.location.origin + "/error.html";
     }
