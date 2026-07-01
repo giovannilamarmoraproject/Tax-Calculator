@@ -4,279 +4,282 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Documentation - Tax Calculator</title>
-        <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,slnt,wdth,wght,ROND@6..144,-10..0,25..151,1..1000,100&display=block" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,slnt,wdth,wght,ROND@6..144,-10..0,25..151,1..1000,100&display=block"
+          rel="stylesheet">
     <style>
-      :root {
-        --dark-bg: #09090b;
-        --glass-bg: rgba(255, 255, 255, 0.03);
-        --glass-border: rgba(255, 255, 255, 0.1);
-        --text-primary: #ffffff;
-        --text-secondary: #a1a1aa;
-        --accent-gradient: linear-gradient(135deg, #3B82F6, #8B5CF6);
-      }
-      html, body {
-        margin: 0; padding: 0;
-        width: 100%;
-        overflow-x: hidden !important;
-      }
-      body {
-        background-color: var(--dark-bg);
-        font-family: 'Google Sans Flex', system-ui, -apple-system, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
-        color: var(--text-primary);
-        display: flex;
-        min-height: 100vh;
-      }
-      .bg-orb {
-        position: fixed; border-radius: 50%; filter: blur(100px); z-index: 0;
-        animation: float 20s infinite ease-in-out alternate;
-      }
-      .orb-1 { top: -10%; left: -5%; width: 400px; height: 400px; background: rgba(59, 130, 246, 0.2); }
-      .orb-2 { bottom: -20%; right: -10%; width: 500px; height: 500px; background: rgba(139, 92, 246, 0.15); animation-delay: -5s; }
-      @keyframes float { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(50px, 50px) scale(1.1); } }
-
-      .sidebar {
-        width:  300px;
-        background: rgba(9, 9, 11, 0.7);
-        backdrop-filter: blur(24px);
-        -webkit-backdrop-filter: blur(24px);
-        border-right: 1px solid var(--glass-border);
-        padding: 2rem;
-        position: fixed;
-        height: 100vh;
-        z-index: 20;
-        display: flex;
-        flex-direction: column;
-        gap: 2rem;
-      }
-      .sidebar-logo {
-        display: flex; align-items: center; gap: 0.75rem;
-        font-size: 1.2rem; font-weight: 800; color: var(--text-primary); text-decoration: none;
-      }
-      .sidebar-logo img { width: 32px; height: 32px; }
-      
-      .nav-links { display: flex; flex-direction: column; gap: 0.5rem; }
-      .nav-link {
-        color: var(--text-secondary); text-decoration: none; padding: 0.75rem 1rem;
-        border-radius: 12px; transition: all 0.2s; font-weight: 500;
-      }
-      .nav-link:hover { background: rgba(255,255,255,0.05); color: var(--text-primary); }
-      .nav-link.active { background: rgba(255,255,255,0.1); color: var(--text-primary); border: 1px solid var(--glass-border); }
-      
-            .main-content {
-        margin-left: 300px;
-        padding: 4rem 5%;
-        width: calc(100% - 300px);
-        box-sizing: border-box;
-        z-index: 10;
-        position: relative;
-        display: flex;
-        gap: 3rem;
-        align-items: flex-start;
-        max-width: 1600px;
-      }
-      
-            .doc-card {
-        background: var(--glass-bg);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid var(--glass-border);
-        border-radius: 24px;
-        padding: 4rem 5rem;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-        flex: 1;
-        min-width: 0;
-      }
-      
-            h1 span {
-        -webkit-text-fill-color: initial;
-        background: none;
-        color: initial;
-        font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
-      }
-      h1 { font-size: 2.8rem; font-weight: 800; background: linear-gradient(135deg, #ffffff 30%, #a1a1aa 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0 0 2rem; display: flex; align-items: center; gap: 1rem; }
-      h2 { font-size: 1.8rem; font-weight: 700; color: var(--text-primary); margin: 3rem 0 1rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.5rem; }
-      h3 { font-size: 1.3rem; font-weight: 600; color: var(--text-primary); margin: 2rem 0 1rem; }
-      h4 { font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin: 1.5rem 0 0.5rem; }
-      p { font-size: 1.1rem; color: var(--text-secondary); line-height: 1.7; margin: 0 0 1.5rem; }
-      ul, ol { color: var(--text-secondary); font-size: 1.1rem; line-height: 1.7; padding-left: 1.5rem; margin-bottom: 1.5rem; }
-      li { margin-bottom: 0.5rem; }
-      strong { color: var(--text-primary); }
-      a { color: #8B5CF6; text-decoration: none; }
-      a:hover { text-decoration: none; }
-      
-      .code-block {
-        background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); border-radius: 12px;
-        padding: 1.5rem; overflow-x: auto; color: #a1a1aa; font-family: monospace; font-size: 0.95rem; line-height: 1.5; margin: 1.5rem 0;
-      }
-      
-
-      /* TOC Styles */
-            .toc-sidebar {
-        width: 350px;
-        position: sticky;
-        top: 4rem;
-        max-height: calc(100vh - 8rem);
-        box-sizing: border-box;
-        overflow-y: auto;
-        flex-shrink: 0;
-      }
-      .toc-card {
-        background: var(--glass-bg);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid var(--glass-border);
-        border-radius: 20px;
-        padding: 1.5rem;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-      }
-      .toc-title {
-        font-family: 'Google Sans Flex', system-ui, -apple-system, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
-        font-size: 1rem;
-        font-weight: 700;
-        color: var(--text-primary);
-        margin-bottom: 1rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 1px solid var(--glass-border);
-      }
-      .toc-link {
-        display: block;
-        color: var(--text-secondary);
-        text-decoration: none;
-        font-size: 0.9rem;
-        padding: 0.4rem 0;
-        transition: all 0.2s;
-        border-left: 2px solid transparent;
-        padding-left: 0.8rem;
-        margin-bottom: 0.2rem;
-      }
-      .toc-link:hover {
-        color: #8B5CF6;
-        border-left-color: #8B5CF6;
-        background: rgba(255,255,255,0.03);
-      }
-      
-      
-      /* Code block glassmorphism fixes */
-      .code-wrapper {
-        max-width: 100%;
-        overflow-x: hidden;
-      }
-      .code-wrapper pre {
-        max-width: 100%;
-        overflow-x: auto;
-      }
-      pre code.hljs {
-        background: rgba(0, 0, 0, 0.4);
-        border: 1px solid var(--glass-border);
-        border-radius: 12px;
-        padding: 1.5rem;
-        font-family: 'Consolas', 'Monaco', monospace;
-        font-size: 0.95rem;
-        line-height: 1.5;
-        box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);
-        overflow-x: auto;
-      }
-      .code-block { display: none; } /* nascondiamo vecchi stili e blocchi se ci sono residui */
-      /* Style Improvements */
-            .doc-card {
-        background: var(--glass-bg);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid var(--glass-border);
-        border-radius: 24px;
-        padding: 4rem 5rem;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-        flex: 1;
-        min-width: 0;
-      }
-      h2 {
-        scroll-margin-top: 2rem; /* Spazio in alto quando si clicca un link TOC */
-      }
-
-            @media (max-width: 1200px) {
-        .toc-sidebar { display: none; }
-      }
-              .main-content {
-        margin-left: 300px;
-        padding: 4rem 5%;
-        width: calc(100% - 300px);
-        box-sizing: border-box;
-        z-index: 10;
-        position: relative;
-        display: flex;
-        gap: 3rem;
-        align-items: flex-start;
-        max-width: 1600px;
-      }
-
-      @media (max-width: 900px) {
-        body { flex-direction: column; }
-        .sidebar { 
-          width: 100%; 
-          height: auto; 
-          position: relative; 
-          padding: 1.5rem 5%; 
-          border-right: none; 
-          border-bottom: 1px solid var(--glass-border); 
-          flex-direction: row; 
-          justify-content: space-between; 
-          align-items: center; 
-          box-sizing: border-box;
-          z-index: 20;
+        :root {
+          --dark-bg: #09090b;
+          --glass-bg: rgba(255, 255, 255, 0.03);
+          --glass-border: rgba(255, 255, 255, 0.1);
+          --text-primary: #ffffff;
+          --text-secondary: #a1a1aa;
+          --accent-gradient: linear-gradient(135deg, #3B82F6, #8B5CF6);
         }
-        .nav-links { flex-direction: row; gap: 0.5rem; }
-        .nav-link { padding: 0.5rem 0.8rem; font-size: 0.9rem; }
-        .main-content {
-          margin-left: 0;
+        html, body {
+          margin: 0; padding: 0;
           width: 100%;
-          padding: 2rem 5%;
+          overflow-x: hidden !important;
         }
-        .doc-card {
-          padding: 2.5rem 2rem;
+        body {
+          background-color: var(--dark-bg);
+          font-family: 'Google Sans Flex', system-ui, -apple-system, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+          color: var(--text-primary);
+          display: flex;
+          min-height: 100vh;
         }
-        h1 { font-size: 2rem; }
-      }
-      @media (max-width: 600px) {
-        .sidebar { flex-direction: column; gap: 1.2rem; align-items: flex-start; padding: 1.5rem; }
-        .nav-links { width: 100%; justify-content: flex-start; flex-wrap: wrap; }
-        .main-content { padding: 1.5rem 1rem; }
-        .doc-card { padding: 1.5rem; }
-        h1 { font-size: 1.6rem; }
-      }
+        .bg-orb {
+          position: fixed; border-radius: 50%; filter: blur(100px); z-index: 0;
+          animation: float 20s infinite ease-in-out alternate;
+        }
+        .orb-1 { top: -10%; left: -5%; width: 400px; height: 400px; background: rgba(59, 130, 246, 0.2); }
+        .orb-2 { bottom: -20%; right: -10%; width: 500px; height: 500px; background: rgba(139, 92, 246, 0.15); animation-delay: -5s; }
+        @keyframes float { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(50px, 50px) scale(1.1); } }
+
+        .sidebar {
+          width:  300px;
+          background: rgba(9, 9, 11, 0.7);
+          backdrop-filter: blur(24px);
+          -webkit-backdrop-filter: blur(24px);
+          border-right: 1px solid var(--glass-border);
+          padding: 2rem;
+          position: fixed;
+          height: 100vh;
+          z-index: 20;
+          display: flex;
+          flex-direction: column;
+          gap: 2rem;
+        }
+        .sidebar-logo {
+          display: flex; align-items: center; gap: 0.75rem;
+          font-size: 1.2rem; font-weight: 800; color: var(--text-primary); text-decoration: none;
+        }
+        .sidebar-logo img { width: 32px; height: 32px; }
+
+        .nav-links { display: flex; flex-direction: column; gap: 0.5rem; }
+        .nav-link {
+          color: var(--text-secondary); text-decoration: none; padding: 0.75rem 1rem;
+          border-radius: 12px; transition: all 0.2s; font-weight: 500;
+        }
+        .nav-link:hover { background: rgba(255,255,255,0.05); color: var(--text-primary); }
+        .nav-link.active { background: rgba(255,255,255,0.1); color: var(--text-primary); border: 1px solid var(--glass-border); }
+
+              .main-content {
+          margin-left: 300px;
+          padding: 4rem 5%;
+          width: calc(100% - 300px);
+          box-sizing: border-box;
+          z-index: 10;
+          position: relative;
+          display: flex;
+          gap: 3rem;
+          align-items: flex-start;
+          max-width: 1600px;
+        }
+
+              .doc-card {
+          background: var(--glass-bg);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border: 1px solid var(--glass-border);
+          border-radius: 24px;
+          padding: 4rem 5rem;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+          flex: 1;
+          min-width: 0;
+        }
+
+              h1 span {
+          -webkit-text-fill-color: initial;
+          background: none;
+          color: initial;
+          font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+        }
+        h1 { font-size: 2.8rem; font-weight: 800; background: linear-gradient(135deg, #ffffff 30%, #a1a1aa 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0 0 2rem; display: flex; align-items: center; gap: 1rem; }
+        h2 { font-size: 1.8rem; font-weight: 700; color: var(--text-primary); margin: 3rem 0 1rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.5rem; }
+        h3 { font-size: 1.3rem; font-weight: 600; color: var(--text-primary); margin: 2rem 0 1rem; }
+        h4 { font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin: 1.5rem 0 0.5rem; }
+        p { font-size: 1.1rem; color: var(--text-secondary); line-height: 1.7; margin: 0 0 1.5rem; }
+        ul, ol { color: var(--text-secondary); font-size: 1.1rem; line-height: 1.7; padding-left: 1.5rem; margin-bottom: 1.5rem; }
+        li { margin-bottom: 0.5rem; }
+        strong { color: var(--text-primary); }
+        a { color: #8B5CF6; text-decoration: none; }
+        a:hover { text-decoration: none; }
+
+        .code-block {
+          background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); border-radius: 12px;
+          padding: 1.5rem; overflow-x: auto; color: #a1a1aa; font-family: monospace; font-size: 0.95rem; line-height: 1.5; margin: 1.5rem 0;
+        }
+
+
+        /* TOC Styles */
+              .toc-sidebar {
+          width: 350px;
+          position: sticky;
+          top: 4rem;
+          max-height: calc(100vh - 8rem);
+          box-sizing: border-box;
+          overflow-y: auto;
+          flex-shrink: 0;
+        }
+        .toc-card {
+          background: var(--glass-bg);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border: 1px solid var(--glass-border);
+          border-radius: 20px;
+          padding: 1.5rem;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        .toc-title {
+          font-family: 'Google Sans Flex', system-ui, -apple-system, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+          font-size: 1rem;
+          font-weight: 700;
+          color: var(--text-primary);
+          margin-bottom: 1rem;
+          padding-bottom: 0.5rem;
+          border-bottom: 1px solid var(--glass-border);
+        }
+        .toc-link {
+          display: block;
+          color: var(--text-secondary);
+          text-decoration: none;
+          font-size: 0.9rem;
+          padding: 0.4rem 0;
+          transition: all 0.2s;
+          border-left: 2px solid transparent;
+          padding-left: 0.8rem;
+          margin-bottom: 0.2rem;
+        }
+        .toc-link:hover {
+          color: #8B5CF6;
+          border-left-color: #8B5CF6;
+          background: rgba(255,255,255,0.03);
+        }
+
+
+        /* Code block glassmorphism fixes */
+        .code-wrapper {
+          max-width: 100%;
+          overflow-x: hidden;
+        }
+        .code-wrapper pre {
+          max-width: 100%;
+          overflow-x: auto;
+        }
+        pre code.hljs {
+          background: rgba(0, 0, 0, 0.4);
+          border: 1px solid var(--glass-border);
+          border-radius: 12px;
+          padding: 1.5rem;
+          font-family: 'Consolas', 'Monaco', monospace;
+          font-size: 0.95rem;
+          line-height: 1.5;
+          box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);
+          overflow-x: auto;
+        }
+        .code-block { display: none; } /* nascondiamo vecchi stili e blocchi se ci sono residui */
+        /* Style Improvements */
+              .doc-card {
+          background: var(--glass-bg);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border: 1px solid var(--glass-border);
+          border-radius: 24px;
+          padding: 4rem 5rem;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+          flex: 1;
+          min-width: 0;
+        }
+        h2 {
+          scroll-margin-top: 2rem; /* Spazio in alto quando si clicca un link TOC */
+        }
+
+              @media (max-width: 1200px) {
+          .toc-sidebar { display: none; }
+        }
+                .main-content {
+          margin-left: 300px;
+          padding: 4rem 5%;
+          width: calc(100% - 300px);
+          box-sizing: border-box;
+          z-index: 10;
+          position: relative;
+          display: flex;
+          gap: 3rem;
+          align-items: flex-start;
+          max-width: 1600px;
+        }
+
+        @media (max-width: 900px) {
+          body { flex-direction: column; }
+          .sidebar {
+            width: 100%;
+            height: auto;
+            position: relative;
+            padding: 1.5rem 5%;
+            border-right: none;
+            border-bottom: 1px solid var(--glass-border);
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+            z-index: 20;
+          }
+          .nav-links { flex-direction: row; gap: 0.5rem; }
+          .nav-link { padding: 0.5rem 0.8rem; font-size: 0.9rem; }
+          .main-content {
+            margin-left: 0;
+            width: 100%;
+            padding: 2rem 5%;
+          }
+          .doc-card {
+            padding: 2.5rem 2rem;
+          }
+          h1 { font-size: 2rem; }
+        }
+        @media (max-width: 600px) {
+          .sidebar { flex-direction: column; gap: 1.2rem; align-items: flex-start; padding: 1.5rem; }
+          .nav-links { width: 100%; justify-content: flex-start; flex-wrap: wrap; }
+          .main-content { padding: 1.5rem 1rem; }
+          .doc-card { padding: 1.5rem; }
+          h1 { font-size: 1.6rem; }
+        }
     </style>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script>
-      function initHighlight() {
-        setTimeout(() => { if (window.hljs) hljs.highlightAll(); }, 150);
-      }
-      document.addEventListener("ACCESS_SPHERE_AUTH", (e) => { 
-        if (e.detail && e.detail.success && !e.detail.error) initHighlight(); 
-      });
-      document.addEventListener("ACCESS_SPHERE_TOKEN", (e) => { 
-        if (e.detail && e.detail.success && !e.detail.error) initHighlight(); 
-      });
-      // Fallback in case auth was extremely fast or already handled
-      document.addEventListener("DOMContentLoaded", () => {
-        setTimeout(() => { if (window.hljs) hljs.highlightAll(); }, 500);
-      });
+        function initHighlight() {
+          setTimeout(() => { if (window.hljs) hljs.highlightAll(); }, 150);
+        }
+        document.addEventListener("ACCESS_SPHERE_AUTH", (e) => {
+          if (e.detail && e.detail.success && !e.detail.error) initHighlight();
+        });
+        document.addEventListener("ACCESS_SPHERE_TOKEN", (e) => {
+          if (e.detail && e.detail.success && !e.detail.error) initHighlight();
+        });
+        // Fallback in case auth was extremely fast or already handled
+        document.addEventListener("DOMContentLoaded", () => {
+          setTimeout(() => { if (window.hljs) hljs.highlightAll(); }, 500);
+        });
     </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="../config/config.js"></script>
     <script src="../js/access-sphere.js"></script>
 </head>
 <body>
-    <div class="bg-orb orb-1"></div>
-    <div class="bg-orb orb-2"></div>
-    <div id="app-root" style="display: contents;"></div>
-    <template id="protected-template">
+<div class="bg-orb orb-1"></div>
+<div class="bg-orb orb-2"></div>
+<div id="app-root" style="display: contents;"></div>
+<template id="protected-template">
     <aside class="sidebar">
-        
+
         <a href="../index.html" class="sidebar-logo" style="display: flex; align-items: center; gap: 0.75rem;">
-            <img src="https://raw.githubusercontent.com/giovannilamarmora/giovannilamarmora.github.io/refs/heads/master/assets/icons/svg/rounded_white.svg" alt="Logo">
+            <img src="https://raw.githubusercontent.com/giovannilamarmora/giovannilamarmora.github.io/refs/heads/master/assets/icons/svg/rounded_white.svg"
+                 alt="Logo">
             <div style="display: flex; flex-direction: column; align-items: flex-start;">
                 <span style="line-height: 1;">Tax Calculator</span>
                 <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; line-height: 1;">Documentazione</span>
@@ -287,65 +290,69 @@
             <a href="getting-started.html" class="nav-link active">⭐ Getting Started</a>
         </div>
     </aside>
-    
+
     <main class="main-content">
         <div class="doc-card">
             <h1><span>⭐</span>Getting Started</h1>
 
-            
-              
-            
-            
-              <h2 id="guida-allutilizzo-del-file-javascript-con-koinly">🚀 Guida all'Utilizzo del File JavaScript con Koinly</h2>
-              <h2 id="introduzione">📖 Introduzione</h2>
-              <p>
+
+            <h2 id="guida-allutilizzo-del-file-javascript-con-koinly">🚀 Guida all'Utilizzo del File JavaScript con
+                Koinly</h2>
+            <h2 id="introduzione">📖 Introduzione</h2>
+            <p>
                 Questo documento fornisce istruzioni su come utilizzare il file
                 JavaScript nella console del browser per interagire con Koinly
                 dopo aver generato il report delle transazioni.
-              </p>
-              <h2 id="prerequisiti">✅ Prerequisiti</h2>
-              <ul>
+            </p>
+            <h2 id="prerequisiti">✅ Prerequisiti</h2>
+            <ul>
                 <li>
-                      Un browser web moderno (Chrome, Firefox, Safari, etc.).
-                    </li>
+                    Un browser web moderno (Chrome, Firefox, Safari, etc.).
+                </li>
                 <li>
-                      Accesso a Koinly con le credenziali necessarie per
-                      visualizzare e gestire i dati delle transazioni.
-                    </li>
-              </ul>
-              <h2 id="passaggi-per-lutilizzo">🛠️ Passaggi per l'Utilizzo</h2>
-              <h3>
-                  1. Generazione del Report su Koinly
-                </h3>
-              <ol>
+                    Accesso a Koinly con le credenziali necessarie per
+                    visualizzare e gestire i dati delle transazioni.
+                </li>
+            </ul>
+            <h2 id="passaggi-per-lutilizzo">🛠️ Passaggi per l'Utilizzo</h2>
+            <h3>
+                1. Generazione del Report su Koinly
+            </h3>
+            <ol>
                 <li>
-                      Accedi al tuo account Koinly su
-                      <a>https://app.koinly.io</a
-                      >.
-                    </li>
+                    Accedi al tuo account Koinly su
+                    <a>https://app.koinly.io</a
+                    >.
+                </li>
                 <li>
-                      Naviga fino alla sezione che ti permette di generare il
-                      report desiderato, come ad esempio il report delle
-                      transazioni o il report fiscale per un anno specifico.
-                    </li>
+                    Naviga fino alla sezione che ti permette di generare il
+                    report desiderato, come ad esempio il report delle
+                    transazioni o il report fiscale per un anno specifico.
+                </li>
                 <li>
-                      Segui le istruzioni fornite da Koinly per generare e
-                      scaricare il report in formato desiderato (ad esempio PDF,
-                      CSV).
-                    </li>
-              </ol>
+                    Segui le istruzioni fornite da Koinly per generare e
+                    scaricare il report in formato desiderato (ad esempio PDF,
+                    CSV).
+                </li>
+            </ol>
 
-              
 
-              <h3>
-                  2. Preparazione del File JavaScript
-                </h3>
-              <p>
-                  Copia il seguente codice JavaScript (che andrai ad eseguire direttamente nella console del browser nel passaggio successivo). Puoi usare l'apposito tasto "Copy" per copiarlo rapidamente negli appunti.
-              </p>
+            <h3>
+                2. Preparazione del File JavaScript
+            </h3>
+            <p>
+                Copia il seguente codice JavaScript (che andrai ad eseguire direttamente nella console del browser nel
+                passaggio successivo). Puoi usare l'apposito tasto "Copy" per copiarlo rapidamente negli appunti.
+            </p>
 
-              <div class="code-wrapper" style="position: relative; margin: 2rem 0;">
-                <button class="copy-btn" style="position: absolute; top: 1rem; right: 1rem; background: rgba(255, 255, 255, 0.1); border: 1px solid var(--glass-border); color: var(--text-primary); padding: 0.4rem 0.8rem; border-radius: 8px; cursor: pointer; font-family: 'Google Sans Flex', sans-serif; font-size: 0.85rem; transition: all 0.2s; z-index: 10;" onmouseover="this.style.background='rgba(255, 255, 255, 0.2)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'" onclick="navigator.clipboard.writeText(this.nextElementSibling.innerText); this.innerText='Copied!'; setTimeout(()=>this.innerText='Copy', 2000);">Copy</button>
+            <div class="code-wrapper" style="position: relative; margin: 2rem 0;">
+                <button class="copy-btn"
+                        style="position: absolute; top: 1rem; right: 1rem; background: rgba(255, 255, 255, 0.1); border: 1px solid var(--glass-border); color: var(--text-primary); padding: 0.4rem 0.8rem; border-radius: 8px; cursor: pointer; font-family: 'Google Sans Flex', sans-serif; font-size: 0.85rem; transition: all 0.2s; z-index: 10;"
+                        onmouseover="this.style.background='rgba(255, 255, 255, 0.2)'"
+                        onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'"
+                        onclick="navigator.clipboard.writeText(this.nextElementSibling.innerText); this.innerText='Copied!'; setTimeout(()=>this.innerText='Copy', 2000);">
+                    Copy
+                </button>
                 <pre><code class="language-javascript">(function () {
   const YEAR = 2021;
   const PAGE_COUNT = 25;
@@ -544,10 +551,8 @@
       const holdings = await fetchHoldings();
       const wallets = await fetchWallets();
       
-      console.log("Your Koinly Tax
-", tax);
-      console.log("Your Koinly Transactions
-", transactions);
+      console.log("Your Koinly Tax", tax);
+      console.log("Your Koinly Transactions", transactions);
       
       const data = {
         year: YEAR,
@@ -570,86 +575,92 @@
 
   run();
 })();</code></pre>
-              </div>
+            </div>
 
-              <ol>
+            <ol>
                 <li>
-                      Prima di incollarlo ed eseguirlo, puoi incollare temporaneamente il codice in un editor di testo per modificare l'anno (<code>const YEAR = 2021;</code>) con quello da te desiderato.
-                    </li>
-              </ol>
-              
-              <h3>
-                  3. Esecuzione del File JavaScript nella Console del Browser
-                </h3>
-              <ol>
+                    Prima di incollarlo ed eseguirlo, puoi incollare temporaneamente il codice in un editor di testo per
+                    modificare l'anno (<code>const YEAR = 2021;</code>) con quello da te desiderato.
+                </li>
+            </ol>
+
+            <h3>
+                3. Esecuzione del File JavaScript nella Console del Browser
+            </h3>
+            <ol>
                 <li>
-                      Apri il browser web e accedi al servizio di Tax
-                      utilizzando le tue credenziali.
-                    </li>
+                    Apri il browser web e accedi al servizio di Tax
+                    utilizzando le tue credenziali.
+                </li>
                 <li>
-                      Naviga fino alla sezione in cui hai generato il report
-                      delle transazioni.
-                    </li>
+                    Naviga fino alla sezione in cui hai generato il report
+                    delle transazioni.
+                </li>
                 <li>
-                      Apri la console del browser (di solito puoi fare clic
-                      destro sulla pagina e selezionare "Ispeziona" quindi
-                      passare alla scheda "Console").
-                    </li>
+                    Apri la console del browser (di solito puoi fare clic
+                    destro sulla pagina e selezionare "Ispeziona" quindi
+                    passare alla scheda "Console").
+                </li>
                 <li>
-                      Incolla il codice JavaScript preparato (<code>tax-interaction.js</code
-                      >) nella console e premi Invio per eseguirlo.
-                    </li>
+                    Incolla il codice JavaScript preparato (<code>tax-interaction.js</code
+                >) nella console e premi Invio per eseguirlo.
+                </li>
                 <li>
-                      Il codice JavaScript interagirà con Koinly, recupererà le
-                      informazioni sulle transazioni e le tasse, e le salverà
-                      nel backend configurato.
-                    </li>
-              </ol>
-              <h3>
-                  4. Verifica dei Risultati
-                </h3>
-              <ol>
+                    Il codice JavaScript interagirà con Koinly, recupererà le
+                    informazioni sulle transazioni e le tasse, e le salverà
+                    nel backend configurato.
+                </li>
+            </ol>
+            <h3>
+                4. Verifica dei Risultati
+            </h3>
+            <ol>
                 <li>
-                      Controlla la console del browser per eventuali messaggi di
-                      output, inclusi ID di transazioni salvati o errori.
-                    </li>
+                    Controlla la console del browser per eventuali messaggi di
+                    output, inclusi ID di transazioni salvati o errori.
+                </li>
                 <li>
-                      Verifica nel backend che i dati siano stati salvati
-                      correttamente secondo le aspettative.
-                    </li>
-              </ol>
-              <h2 id="risoluzione-dei-problemi">🔧 Risoluzione dei Problemi</h2>
-              <ul>
+                    Verifica nel backend che i dati siano stati salvati
+                    correttamente secondo le aspettative.
+                </li>
+            </ol>
+            <h2 id="risoluzione-dei-problemi">🔧 Risoluzione dei Problemi</h2>
+            <ul>
                 <li>
-                      Se il codice JavaScript non funziona come previsto,
-                      verifica di avere accesso corretto a Koinly e che le API
-                      siano chiamate correttamente con le credenziali e i
-                      parametri richiesti.
-                    </li>
+                    Se il codice JavaScript non funziona come previsto,
+                    verifica di avere accesso corretto a Koinly e che le API
+                    siano chiamate correttamente con le credenziali e i
+                    parametri richiesti.
+                </li>
                 <li>
-                      Controlla la console del browser per eventuali errori e
-                      verifica i messaggi di debug per risolvere i problemi.
-                    </li>
-              </ul>
-              <hr>
-              <p>
+                    Controlla la console del browser per eventuali errori e
+                    verifica i messaggi di debug per risolvere i problemi.
+                </li>
+            </ul>
+            <hr>
+            <p>
                 Questo documento fornisce una guida passo-passo su come
                 utilizzare il file JavaScript nella console del browser per
                 interagire con Koinly dopo aver generato il report delle
                 transazioni. Assicurati di personalizzare il codice JavaScript e
                 le istruzioni in base alle tue specifiche esigenze e
                 configurazioni.
-              </p>
-            
-            
-              
-            
-          
+            </p>
+
+
         </div>
-    
-        <aside class="toc-sidebar"><div class="toc-card"><div class="toc-title">📌 On this page</div><a href="#guida-allutilizzo-del-file-javascript-con-koinly" class="toc-link">🚀 Guida all'Utilizzo del File JavaScript con Koinly</a><a href="#introduzione" class="toc-link">📖 Introduzione</a><a href="#prerequisiti" class="toc-link">✅ Prerequisiti</a><a href="#passaggi-per-lutilizzo" class="toc-link">🛠️ Passaggi per l'Utilizzo</a><a href="#risoluzione-dei-problemi" class="toc-link">🔧 Risoluzione dei Problemi</a></div></aside>
+
+        <aside class="toc-sidebar">
+            <div class="toc-card">
+                <div class="toc-title">📌 On this page</div>
+                <a href="#guida-allutilizzo-del-file-javascript-con-koinly" class="toc-link">🚀 Guida all'Utilizzo del
+                    File JavaScript con Koinly</a><a href="#introduzione" class="toc-link">📖 Introduzione</a><a
+                    href="#prerequisiti" class="toc-link">✅ Prerequisiti</a><a href="#passaggi-per-lutilizzo"
+                                                                               class="toc-link">🛠️ Passaggi per
+                l'Utilizzo</a><a href="#risoluzione-dei-problemi" class="toc-link">🔧 Risoluzione dei Problemi</a></div>
+        </aside>
     </main>
-    </template>
+</template>
 
 </body>
 </html>
