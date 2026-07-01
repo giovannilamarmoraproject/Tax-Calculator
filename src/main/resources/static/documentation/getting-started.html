@@ -240,11 +240,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script>hljs.highlightAll();</script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="../config/config.js"></script>
+    <script src="../js/access-sphere.js"></script>
 </head>
 <body>
     <div class="bg-orb orb-1"></div>
     <div class="bg-orb orb-2"></div>
-    
+    <div id="app-root" style="display: contents;"></div>
+    <template id="protected-template">
     <aside class="sidebar">
         
         <a href="../index.html" class="sidebar-logo" style="display: flex; align-items: center; gap: 0.75rem;">
@@ -621,6 +625,7 @@
     
         <aside class="toc-sidebar"><div class="toc-card"><div class="toc-title">📌 On this page</div><a href="#guida-allutilizzo-del-file-javascript-con-koinly" class="toc-link">🚀 Guida all'Utilizzo del File JavaScript con Koinly</a><a href="#introduzione" class="toc-link">📖 Introduzione</a><a href="#prerequisiti" class="toc-link">✅ Prerequisiti</a><a href="#passaggi-per-lutilizzo" class="toc-link">🛠️ Passaggi per l'Utilizzo</a><a href="#risoluzione-dei-problemi" class="toc-link">🔧 Risoluzione dei Problemi</a></div></aside>
     </main>
+    </template>
 
 </body>
 </html>
