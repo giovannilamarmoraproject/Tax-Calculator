@@ -1,12 +1,11 @@
 package io.github.giovannilamarmora.tax_calculator.pdf.model;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Builder
 @Data
@@ -34,7 +33,7 @@ public class Transaction {
   private String txurl; // Può essere null
   private String contract_address; // Può essere null
   private String method_name; // Può essere null
-  private Boolean negative_balances; // Può essere null
+  private Object negative_balances; // Può essere null
   private boolean missing_rates;
   private String missing_cost_basis; // Può essere null
   private boolean margin;
@@ -140,10 +139,10 @@ public class Transaction {
     private String type;
     private boolean shutdown;
     private boolean api_beta;
-    private List<String> api_required_fields;
+    private List<Object> api_required_fields;
     private String api_oauth_url; // Può essere null
-    private List<String> api_optional_fields;
-    private List<String> api_notes;
+    private List<Object> api_optional_fields;
+    private List<Object> api_notes;
     private String instructions_url;
     private boolean include_api_warning_text;
     private boolean include_csv_warning_text;

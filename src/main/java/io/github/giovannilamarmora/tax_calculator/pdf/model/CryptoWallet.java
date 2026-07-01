@@ -59,10 +59,10 @@ public class CryptoWallet {
         private boolean shutdown;
         private Boolean api_active;
         private boolean api_beta;
-        private List<String> api_required_fields;
+        private List<Object> api_required_fields;
         private String api_oauth_url;
-        private List<String> api_optional_fields;
-        private List<String> api_notes;
+        private List<Object> api_optional_fields;
+        private List<Object> api_notes;
         private String instructions_url;
         private String recommended_input_source;
         private String api_instructions;

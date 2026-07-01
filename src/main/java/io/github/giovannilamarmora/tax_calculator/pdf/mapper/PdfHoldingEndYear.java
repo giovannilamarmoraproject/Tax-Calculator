@@ -58,20 +58,20 @@ public class PdfHoldingEndYear {
     // Imposta lo spazio prima della tabella per aumentare lo spazio tra le righe
     table.setSpacingBefore(10f);
 
-    List<CryptoHolding.Holding> holdings =
-        ObjectUtils.isEmpty(holding.getPrevious())
-            ? holding.getResults().getHoldings().stream()
-                .filter(
-                    holding1 ->
-                        Double.parseDouble(holding1.getAmount()) > 0
-                            && holding1.getCurrency().isCrypto())
-                .toList()
-            : holding.getPrevious().getResults().getHoldings().stream()
-                .filter(
-                    holding1 ->
-                        Double.parseDouble(holding1.getAmount()) > 0
-                            && holding1.getCurrency().isCrypto())
+    List<CryptoHolding.Holding> holdings = new java.util.ArrayList<>();
+    if (ObjectUtils.isEmpty(holding.getPrevious())) {
+        if (!ObjectUtils.isEmpty(holding.getResults()) && !ObjectUtils.isEmpty(holding.getResults().getHoldings())) {
+            holdings = holding.getResults().getHoldings().stream()
+                .filter(holding1 -> Double.parseDouble(holding1.getAmount()) > 0 && holding1.getCurrency().isCrypto())
                 .toList();
+        }
+    } else {
+        if (!ObjectUtils.isEmpty(holding.getPrevious().getResults()) && !ObjectUtils.isEmpty(holding.getPrevious().getResults().getHoldings())) {
+            holdings = holding.getPrevious().getResults().getHoldings().stream()
+                .filter(holding1 -> Double.parseDouble(holding1.getAmount()) > 0 && holding1.getCurrency().isCrypto())
+                .toList();
+        }
+    }
     // Crea uno stream dalla lista, inverti l'ordine degli elementi e itera
     holdings.forEach(
         hold -> {
@@ -160,8 +160,8 @@ public class PdfHoldingEndYear {
                     MathService.round(
                         Double.parseDouble(
                             ObjectUtils.isEmpty(holding.getPrevious())
-                                ? holding.getResults().getTotal_cost()
-                                : holding.getPrevious().getResults().getTotal_cost()),
+                                ? (!ObjectUtils.isEmpty(holding.getResults()) && !ObjectUtils.isEmpty(holding.getResults().getTotal_cost()) ? holding.getResults().getTotal_cost() : "0")
+                                : (!ObjectUtils.isEmpty(holding.getPrevious().getResults()) && !ObjectUtils.isEmpty(holding.getPrevious().getResults().getTotal_cost()) ? holding.getPrevious().getResults().getTotal_cost() : "0")),
                         2)),
                 PdfFont.VERY_SMALL.getFont()));
     total.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -176,8 +176,8 @@ public class PdfHoldingEndYear {
                     MathService.round(
                         Double.parseDouble(
                             ObjectUtils.isEmpty(holding.getPrevious())
-                                ? holding.getResults().getTotal_value()
-                                : holding.getPrevious().getResults().getTotal_value()),
+                                ? (!ObjectUtils.isEmpty(holding.getResults()) && !ObjectUtils.isEmpty(holding.getResults().getTotal_value()) ? holding.getResults().getTotal_value() : "0")
+                                : (!ObjectUtils.isEmpty(holding.getPrevious().getResults()) && !ObjectUtils.isEmpty(holding.getPrevious().getResults().getTotal_value()) ? holding.getPrevious().getResults().getTotal_value() : "0")),
                         2)),
                 PdfFont.VERY_SMALL.getFont()));
     total.setHorizontalAlignment(Element.ALIGN_RIGHT);
