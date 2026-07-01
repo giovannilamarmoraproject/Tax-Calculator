@@ -16,14 +16,17 @@
         --text-secondary: #a1a1aa;
         --accent-gradient: linear-gradient(135deg, #3B82F6, #8B5CF6);
       }
-      body {
+      html, body {
         margin: 0; padding: 0;
+        width: 100%;
+        overflow-x: hidden !important;
+      }
+      body {
         background-color: var(--dark-bg);
         font-family: 'Google Sans Flex', system-ui, -apple-system, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
         color: var(--text-primary);
         display: flex;
         min-height: 100vh;
-        overflow-x: hidden;
       }
       .bg-orb {
         position: fixed; border-radius: 50%; filter: blur(100px); z-index: 0;
@@ -185,41 +188,40 @@
         align-items: flex-start;
         max-width: 1600px;
       }
-      }
+
       @media (max-width: 900px) {
         body { flex-direction: column; }
-        .sidebar { width: 100%; height: auto; position: relative; padding: 1.5rem 5%; border-right: none; border-bottom: 1px solid var(--glass-border); flex-direction: row; justify-content: space-between; align-items: center; }
-        .nav-links { flex-direction: row; }
-              .main-content {
-        margin-left: 300px;
-        padding: 4rem 5%;
-        width: calc(100% - 300px);
-        box-sizing: border-box;
-        z-index: 10;
-        position: relative;
-        display: flex;
-        gap: 3rem;
-        align-items: flex-start;
-        max-width: 1600px;
+        .sidebar { 
+          width: 100%; 
+          height: auto; 
+          position: relative; 
+          padding: 1.5rem 5%; 
+          border-right: none; 
+          border-bottom: 1px solid var(--glass-border); 
+          flex-direction: row; 
+          justify-content: space-between; 
+          align-items: center; 
+          box-sizing: border-box;
+          z-index: 20;
+        }
+        .nav-links { flex-direction: row; gap: 0.5rem; }
+        .nav-link { padding: 0.5rem 0.8rem; font-size: 0.9rem; }
+        .main-content {
+          margin-left: 0;
+          width: 100%;
+          padding: 2rem 5%;
+        }
+        .doc-card {
+          padding: 2.5rem 2rem;
+        }
+        h1 { font-size: 2rem; }
       }
-              .doc-card {
-        background: var(--glass-bg);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid var(--glass-border);
-        border-radius: 24px;
-        padding: 4rem 5rem;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-        flex: 1;
-        min-width: 0;
-      }
-              h1 span {
-        -webkit-text-fill-color: initial;
-        background: none;
-        color: initial;
-        font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
-      }
-      h1 { font-size: 2.2rem; }
+      @media (max-width: 600px) {
+        .sidebar { flex-direction: column; gap: 1.2rem; align-items: flex-start; padding: 1.5rem; }
+        .nav-links { width: 100%; justify-content: flex-start; flex-wrap: wrap; }
+        .main-content { padding: 1.5rem 1rem; }
+        .doc-card { padding: 1.5rem; }
+        h1 { font-size: 1.6rem; }
       }
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
