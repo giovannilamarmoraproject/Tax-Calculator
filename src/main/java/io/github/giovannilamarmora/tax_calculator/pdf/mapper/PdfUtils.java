@@ -22,6 +22,14 @@ public class PdfUtils {
   }
 
   @LogInterceptor(type = LogTimeTracker.ActionType.MAPPER)
+  public static void addEmptyLine(PdfPTable table, int number) {
+    for (int i = 0; i < number; i++) {
+      PdfPCell cell = createSubtitleCell(" ");
+      table.addCell(cell);
+    }
+  }
+
+  @LogInterceptor(type = LogTimeTracker.ActionType.MAPPER)
   public static void addToDocument(Document document, Object data) {
     try {
       document.add((Element) data);
@@ -180,19 +188,19 @@ public class PdfUtils {
     return false;
   }
 
-    public static String formatCurrency(double amount) {
-        NumberFormat format = NumberFormat.getNumberInstance(Locale.US);
-        format.setMinimumFractionDigits(2);
-        format.setMaximumFractionDigits(2);
-        format.setGroupingUsed(true);
-        return format.format(amount);
-    }
+  public static String formatCurrency(double amount) {
+    NumberFormat format = NumberFormat.getNumberInstance(Locale.US);
+    format.setMinimumFractionDigits(2);
+    format.setMaximumFractionDigits(2);
+    format.setGroupingUsed(true);
+    return format.format(amount);
+  }
 
-    public static String formatCryptoAmount(double amount) {
-        NumberFormat format = NumberFormat.getNumberInstance(Locale.US);
-        format.setMinimumFractionDigits(2);
-        format.setMaximumFractionDigits(8);
-        format.setGroupingUsed(true);
-        return format.format(amount);
-    }
+  public static String formatCryptoAmount(double amount) {
+    NumberFormat format = NumberFormat.getNumberInstance(Locale.US);
+    format.setMinimumFractionDigits(2);
+    format.setMaximumFractionDigits(8);
+    format.setGroupingUsed(true);
+    return format.format(amount);
+  }
 }

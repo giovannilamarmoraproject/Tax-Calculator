@@ -60,14 +60,18 @@ public class PdfOverview {
 
     String[] contents = {
       "1. Riepilogo plusvalenze",
-      "2. Riepilogo delle entrate",
-      "3. Riepilogo del patrimonio",
-      "4. Saldi di fine anno",
-      "5. Transazioni di plusvalenze",
-      "6. Transazioni entrate",
-      "7. Regali, donazioni e attivi perduti",
-      "8. Spese",
-      "9. Fonti di dati"
+      "2. Riepilogo dei futures",
+      "3. Riepilogo delle entrate",
+      "4. Riepilogo spese",
+      "5. Varie riepilogo",
+      "6. Riepilogo regali, donazioni e attivi perduti",
+      "7. Riepilogo del patrimonio",
+      "8. Saldi di fine anno",
+      "9. Transazioni di plusvalenze",
+      "10. Transazioni entrate",
+      "11. Regali, donazioni e attivi perduti",
+      "12. Transazioni di spesa",
+      "13. Fonti di dati"
     };
 
     for (String item : contents) {

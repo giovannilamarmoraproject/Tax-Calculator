@@ -137,5 +137,14 @@ public class CryptoTaxes {
     private String profit;
     private String loss;
     private String net;
+    private String futures_commissions_received;
+    private String futures_commissions_paid;
+    private String funding_fees_received;
+    private String funding_fees_paid;
+
+    public String getFutures_commissions_received() { return futures_commissions_received != null ? futures_commissions_received : "0.00"; }
+    public String getFutures_commissions_paid() { return futures_commissions_paid != null ? futures_commissions_paid : "0.00"; }
+    public String getFunding_fees_received() { return funding_fees_received != null ? funding_fees_received : "0.00"; }
+    public String getFunding_fees_paid() { return funding_fees_paid != null ? funding_fees_paid : "0.00"; }
   }
 }

@@ -20,7 +20,7 @@ public class PdfExpenses {
       throws DocumentException {
     document.newPage();
     Paragraph preface = new Paragraph();
-    preface.add(new Paragraph("Spese", PdfFont.TITLE_NORMAL.getFont()));
+    preface.add(new Paragraph("Transazioni di spesa", PdfFont.TITLE_NORMAL.getFont()));
     PdfUtils.addEmptyLine(preface, 1);
     PdfUtils.addToDocument(document, preface);
 
