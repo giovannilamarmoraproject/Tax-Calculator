@@ -3,22 +3,32 @@ async function generatePDF(btnElement) {
     const input = document.createElement("input");
     input.type = "file";
     input.accept = "application/json";
+    input.style.display = "none";
+    document.body.appendChild(input);
+
+    // Gestione della rimozione se l'utente annulla (non sempre affidabile, ma una sicurezza in più)
+    window.addEventListener('focus', () => {
+      setTimeout(() => {
+        if (!input.value) {
+          if (input.parentNode) input.parentNode.removeChild(input);
+        }
+      }, 1000);
+    }, { once: true });
 
     input.onchange = async (event) => {
       const file = event.target.files[0];
       if (!file) {
-        throw new Error("No file selected");
+        if (input.parentNode) input.parentNode.removeChild(input);
+        return;
       }
 
       // Salva testo originale e imposta caricamento
       let originalText = "";
-      // Se non arriva this o arriva un evento strano, peschiamo il bottone per ID
       if (!btnElement || !btnElement.innerHTML) {
           btnElement = document.getElementById("generate-pdf-btn");
       }
       if (btnElement) {
         originalText = btnElement.innerHTML;
-        // Inject a simple keyframes style for the spinner if it doesn't exist
         if (!document.getElementById("spinner-style")) {
             const style = document.createElement("style");
             style.id = "spinner-style";
@@ -65,7 +75,12 @@ async function generatePDF(btnElement) {
         window.open(urlObject, "_blank");
         console.log("Visualizzazione completata.");
 
+      } catch (innerError) {
+        console.error("Errore durante la generazione:", innerError);
+        alert("Si è verificato un errore durante la generazione del PDF. Riprova.");
       } finally {
+        if (input.parentNode) input.parentNode.removeChild(input);
+        
         // Ripristina il bottone
         if (btnElement) {
           btnElement.innerHTML = originalText;
