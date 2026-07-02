@@ -31,7 +31,7 @@ public class PdfService {
       // TransactionHeader event = new TransactionHeader();
       // writer.setPageEvent(event);
       document.open();
-      document.addTitle("Tax-Report_" + LocalDateTime.now());
+      document.addTitle("Tax-Report_" + taxRequest.getYear() + "_" + LocalDateTime.now());
       // Prima pagina
       PdfOverview.setFirstPage(document, year);
 

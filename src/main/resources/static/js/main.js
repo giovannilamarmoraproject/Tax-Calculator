@@ -72,8 +72,28 @@ async function generatePDF(btnElement) {
 
         const blob = await response.blob();
         const urlObject = URL.createObjectURL(blob);
-        window.open(urlObject, "_blank");
-        console.log("Visualizzazione completata.");
+
+        let filename = "Resoconto_Fiscale.pdf";
+        const disposition = response.headers.get("Content-Disposition");
+        if (disposition && disposition.indexOf("filename=") !== -1) {
+            const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
+            if (matches != null && matches[1]) {
+                filename = matches[1].replace(/['"]/g, '');
+            }
+        }
+
+        // Crea link per scaricare/aprire il file col nome corretto
+        const a = document.createElement("a");
+        a.href = urlObject;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        // Se vogliamo aprire il file anche in una nuova tab (perderà però il nome originale in Chrome)
+        // window.open(urlObject, "_blank");
+
+        console.log("Generazione completata: " + filename);
 
       } catch (innerError) {
         console.error("Errore durante la generazione:", innerError);

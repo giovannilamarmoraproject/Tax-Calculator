@@ -8,8 +8,9 @@ import io.github.giovannilamarmora.tax_calculator.pdf.PdfService;
 import io.github.giovannilamarmora.utils.interceptors.LogInterceptor;
 import io.github.giovannilamarmora.utils.interceptors.LogTimeTracker;
 import io.github.giovannilamarmora.utils.utilities.MapperUtils;
-import java.net.URI;
+import io.github.giovannilamarmora.utils.utilities.ObjectToolkit;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.*;
 import org.springframework.http.codec.multipart.FilePart;
@@ -49,8 +50,17 @@ public class AppService {
                 throw new IllegalArgumentException("Invalid request data");
               }
 
+              String filename = "Tax-Report";
+
+              if (!ObjectToolkit.isNullOrEmpty(request)
+                  && !ObjectToolkit.isNullOrEmpty(request.getYear()))
+                filename = filename + "_" + request.getYear();
+
+              filename = filename + "_" + LocalDateTime.now() + ".pdf";
+
               return ResponseEntity.ok()
-                  .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=crypto_taxes.pdf")
+                  .header(
+                      HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
                   .contentType(MediaType.APPLICATION_PDF)
                   .body(PdfService.generatePdf(request));
             });
