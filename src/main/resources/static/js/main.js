@@ -1,4 +1,4 @@
-async function generatePDF() {
+async function generatePDF(btnElement) {
   try {
     const input = document.createElement("input");
     input.type = "file";
@@ -10,50 +10,70 @@ async function generatePDF() {
         throw new Error("No file selected");
       }
 
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const client_id = localStorage.getItem("Client-ID");
-      const token = localStorage.getItem(client_id + "_access-token");
-
-      const headers = {
-        Authorization: `Bearer ${token}`,
-        ...getSavedHeaders(),
-      };
-
-      const requestOptions = {
-        method: "POST",
-        body: formData,
-        redirect: "follow",
-        headers: headers,
-      };
-
-      const response = await fetch(
-        `${window.location.origin}/api/generate-pdf`,
-        requestOptions
-      );
-
-      if (!response.ok) {
-        window.location.href = "/error.html";
-        throw new Error(`Error durante la richiesta: ${response.statusText}`);
+      // Salva testo originale e imposta caricamento
+      let originalText = "";
+      // Se non arriva this o arriva un evento strano, peschiamo il bottone per ID
+      if (!btnElement || !btnElement.innerHTML) {
+          btnElement = document.getElementById("generate-pdf-btn");
+      }
+      if (btnElement) {
+        originalText = btnElement.innerHTML;
+        // Inject a simple keyframes style for the spinner if it doesn't exist
+        if (!document.getElementById("spinner-style")) {
+            const style = document.createElement("style");
+            style.id = "spinner-style";
+            style.innerHTML = "@keyframes spin { to { transform: rotate(360deg); } }";
+            document.head.appendChild(style);
+        }
+        btnElement.innerHTML = `<span style="display:inline-block; margin-right:8px; border:2px solid #fff; border-top-color:transparent; border-radius:50%; width:16px; height:16px; animation:spin 1s linear infinite;"></span> Processing...`;
+        btnElement.disabled = true;
+        btnElement.style.opacity = "0.7";
+        btnElement.style.cursor = "wait";
       }
 
-      const blob = await response.blob();
-      const urlObject = URL.createObjectURL(blob);
-      window.open(urlObject, "_blank");
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
 
-      //const link = document.createElement('a');
-      //link.href = urlObject;
-      //link.download = 'report.pdf';
+        const client_id = localStorage.getItem("Client-ID");
+        const token = localStorage.getItem(client_id + "_access-token");
 
-      //document.body.appendChild(link);
-      //link.click();
+        const headers = {
+          Authorization: `Bearer ${token}`,
+          ...getSavedHeaders(),
+        };
 
-      //URL.revokeObjectURL(urlObject);
-      //document.body.removeChild(link);
+        const requestOptions = {
+          method: "POST",
+          body: formData,
+          redirect: "follow",
+          headers: headers,
+        };
 
-      //console.log('Download completato.');
-      console.log("Visualizzazione completata.");
+        const response = await fetch(
+          `${window.location.origin}/api/generate-pdf`,
+          requestOptions
+        );
+
+        if (!response.ok) {
+          window.location.href = "/error.html";
+          throw new Error(`Error durante la richiesta: ${response.statusText}`);
+        }
+
+        const blob = await response.blob();
+        const urlObject = URL.createObjectURL(blob);
+        window.open(urlObject, "_blank");
+        console.log("Visualizzazione completata.");
+
+      } finally {
+        // Ripristina il bottone
+        if (btnElement) {
+          btnElement.innerHTML = originalText;
+          btnElement.disabled = false;
+          btnElement.style.opacity = "1";
+          btnElement.style.cursor = "pointer";
+        }
+      }
     };
 
     input.click();

@@ -56,32 +56,32 @@ public class PdfCapitalGains {
     PdfUtils.addSummaryTableRow(
         table,
         "Il ricavato delle vendite",
-        "€" + MathService.round(Double.parseDouble(results.getCapital_gains().getProceeds()), 2),
+        "€" + PdfUtils.formatCurrency(Double.parseDouble(results.getCapital_gains().getProceeds())),
         "Questo è l'importo che hai ricevuto da tutte le tue cessioni. Questa cifra può"
             + "essere più alta del previsto se hai anche fatto operazioni con i ricavi delle"
             + "transazioni precedenti");
     PdfUtils.addSummaryTableRow(
         table,
         "Costi di acquisizione",
-        "€" + MathService.round(Double.parseDouble(results.getCapital_gains().getCosts()), 2),
+        "€" + PdfUtils.formatCurrency(Double.parseDouble(results.getCapital_gains().getCosts())),
         "Importo che hai pagato per acquistare gli attivi, comprese le commissioni\n"
             + "delle operazioni");
     PdfUtils.addSummaryTableRow(
         table,
         "Profitti, prima delle perdite",
-        "€" + MathService.round(Double.parseDouble((results.getCapital_gains().getProfit())), 2),
+        "€" + PdfUtils.formatCurrency(Double.parseDouble(results.getCapital_gains().getProfit())),
         "Importo del profitto che hai realizzato dalle tue operazioni dopo aver dedotto\n"
             + "eventuali costi");
     PdfUtils.addSummaryTableRow(
         table,
         "Perdite",
-        "€" + MathService.round(Double.parseDouble(results.getCapital_gains().getLoss()), 2),
+        "€" + PdfUtils.formatCurrency(Double.parseDouble(results.getCapital_gains().getLoss())),
         "Importo delle perdite che hai realizzato dalle tue operazioni dopo aver\n"
             + "dedotto eventuali costi");
     PdfUtils.addSummaryTableRow(
         table,
         "Ricavi netti",
-        "€" + MathService.round(Double.parseDouble(results.getCapital_gains().getNet()), 2),
+        "€" + PdfUtils.formatCurrency(Double.parseDouble(results.getCapital_gains().getNet())),
         "Guadagno totale dalle tue operazioni, questo è il profitto meno le perdite");
   }
 
@@ -97,12 +97,12 @@ public class PdfCapitalGains {
     PdfUtils.addSummaryTableRow(
         table,
         "Profitti di margine",
-        "€" + MathService.round(Double.parseDouble(results.getExternal_gains().getProfit()), 2),
+        "€" + PdfUtils.formatCurrency(Double.parseDouble(results.getExternal_gains().getProfit())),
         " ");
     PdfUtils.addSummaryTableRow(
         table,
         "Perdite di margine",
-        "€" + MathService.round(Double.parseDouble(results.getExternal_gains().getLoss()), 2),
+        "€" + PdfUtils.formatCurrency(Double.parseDouble(results.getExternal_gains().getLoss())),
         " ");
     PdfUtils.addSummaryTableRow(
         table,

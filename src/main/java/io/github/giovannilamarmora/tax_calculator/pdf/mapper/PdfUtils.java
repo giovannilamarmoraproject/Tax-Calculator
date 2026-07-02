@@ -7,7 +7,9 @@ import com.itextpdf.text.pdf.draw.DottedLineSeparator;
 import io.github.giovannilamarmora.tax_calculator.pdf.model.PdfFont;
 import io.github.giovannilamarmora.utils.interceptors.LogInterceptor;
 import io.github.giovannilamarmora.utils.interceptors.LogTimeTracker;
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 import org.springframework.util.ObjectUtils;
 
 public class PdfUtils {
@@ -177,4 +179,20 @@ public class PdfUtils {
     }
     return false;
   }
+
+    public static String formatCurrency(double amount) {
+        NumberFormat format = NumberFormat.getNumberInstance(Locale.US);
+        format.setMinimumFractionDigits(2);
+        format.setMaximumFractionDigits(2);
+        format.setGroupingUsed(true);
+        return format.format(amount);
+    }
+
+    public static String formatCryptoAmount(double amount) {
+        NumberFormat format = NumberFormat.getNumberInstance(Locale.US);
+        format.setMinimumFractionDigits(2);
+        format.setMaximumFractionDigits(8);
+        format.setGroupingUsed(true);
+        return format.format(amount);
+    }
 }

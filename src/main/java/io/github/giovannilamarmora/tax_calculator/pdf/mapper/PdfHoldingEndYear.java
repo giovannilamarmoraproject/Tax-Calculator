@@ -87,7 +87,7 @@ public class PdfHoldingEndYear {
 
           BigDecimal amount = new BigDecimal(hold.getAmount());
           cell =
-              new PdfPCell(new Phrase(amount.abs().toPlainString(), PdfFont.VERY_SMALL.getFont()));
+              new PdfPCell(new Phrase(PdfUtils.formatCryptoAmount(amount.doubleValue()), PdfFont.VERY_SMALL.getFont()));
           cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
           cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
           cell.setBorder(PdfPCell.NO_BORDER);
@@ -96,7 +96,7 @@ public class PdfHoldingEndYear {
           cell =
               new PdfPCell(
                   new Phrase(
-                      String.valueOf(MathService.round(Double.parseDouble(hold.getCost()), 2)),
+                      PdfUtils.formatCurrency(Double.parseDouble(hold.getCost())),
                       PdfFont.VERY_SMALL.getFont()));
           cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
           cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
@@ -106,24 +106,25 @@ public class PdfHoldingEndYear {
           cell =
               new PdfPCell(
                   new Phrase(
-                      String.valueOf(MathService.round(Double.parseDouble(hold.getValue()), 2)),
+                      PdfUtils.formatCurrency(Double.parseDouble(hold.getValue())),
                       PdfFont.VERY_SMALL.getFont()));
           cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
           cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
           cell.setBorder(PdfPCell.NO_BORDER);
           table.addCell(cell); // Valore netto
 
+          // Calcola il prezzo unitario in EUR (Valore / Quantità)
+          double val = Double.parseDouble(hold.getValue());
+          double qta = Double.parseDouble(hold.getAmount());
+          String priceString = " ";
+          if (qta > 0) {
+              double unitPrice = val / qta;
+              priceString = "@ €" + PdfUtils.formatCurrency(unitPrice) + " per " + hold.getCurrency().getSymbol();
+          }
+
           cell =
               new PdfPCell(
-                  new Phrase(
-                      ObjectUtils.isEmpty(hold.getCurrency().getMarket().getPrice())
-                          ? " "
-                          : ("@ USD "
-                              + MathService.round(
-                                  Double.parseDouble(hold.getCurrency().getMarket().getPrice()), 2)
-                              + " per "
-                              + hold.getCurrency().getSymbol()),
-                      PdfFont.VERY_SMALL.getFont()));
+                  new Phrase(priceString, PdfFont.VERY_SMALL.getFont()));
           cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
           cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
           cell.setBorder(PdfPCell.NO_BORDER);
