@@ -365,6 +365,13 @@
                         Ready to finalize?</h2>
                     <p style="font-size: 0.95rem;">Export your fully compiled, ready-to-file tax report.</p>
                 </div>
+                
+                <label class="ios-toggle-label">
+                    <input type="checkbox" id="pdfActionToggle" value="view">
+                    <div class="ios-toggle"></div>
+                    <span class="ios-toggle-text" data-off="Download file" data-on="View in browser"></span>
+                </label>
+
                 <button id="generate-pdf-btn" class="glass-btn-primary" onclick="generatePDF(this)">
                     Generate PDF Report
                 </button>

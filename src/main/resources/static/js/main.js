@@ -82,18 +82,23 @@ async function generatePDF(btnElement) {
             }
         }
 
-        // Crea link per scaricare/aprire il file col nome corretto
-        const a = document.createElement("a");
-        a.href = urlObject;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+        const actionToggle = document.getElementById("pdfActionToggle");
+        const action = (actionToggle && actionToggle.checked) ? "view" : "download";
 
-        // Se vogliamo aprire il file anche in una nuova tab (perderà però il nome originale in Chrome)
-        // window.open(urlObject, "_blank");
-
-        console.log("Generazione completata: " + filename);
+        if (action === "download") {
+            // Crea link per scaricare il file col nome corretto
+            const a = document.createElement("a");
+            a.href = urlObject;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            console.log("Download completato: " + filename);
+        } else {
+            // Apre il file in una nuova tab (perderà il nome originale)
+            window.open(urlObject, "_blank");
+            console.log("Visualizzazione completata: " + filename);
+        }
 
       } catch (innerError) {
         console.error("Errore durante la generazione:", innerError);
