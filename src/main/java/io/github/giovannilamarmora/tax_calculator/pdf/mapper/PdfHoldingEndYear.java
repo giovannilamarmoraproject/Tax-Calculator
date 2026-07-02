@@ -9,12 +9,9 @@ import io.github.giovannilamarmora.tax_calculator.pdf.model.PdfFont;
 import io.github.giovannilamarmora.utils.interceptors.LogInterceptor;
 import io.github.giovannilamarmora.utils.interceptors.LogTimeTracker;
 import io.github.giovannilamarmora.utils.math.MathService;
-import org.springframework.util.ObjectUtils;
-
 import java.math.BigDecimal;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.stream.IntStream;
+import org.springframework.util.ObjectUtils;
 
 public class PdfHoldingEndYear {
 
@@ -24,10 +21,11 @@ public class PdfHoldingEndYear {
     document.newPage();
     Paragraph preface = new Paragraph();
     preface.add(new Paragraph("Saldi di fine anno", PdfFont.TITLE_NORMAL.getFont()));
-    PdfUtils.addEmptyLine(preface, 1);
+    // preface.setPaddingTop(-10);
+    // PdfUtils.addEmptyLine(preface, 1);
     PdfUtils.addToDocument(document, preface);
 
-      if (PdfUtils.isEmptyData(holding, document)) return;
+    if (PdfUtils.isEmptyData(holding, document)) return;
 
     PdfPTable table = new PdfPTable(5);
     table.setWidthPercentage(100);
@@ -60,17 +58,27 @@ public class PdfHoldingEndYear {
 
     List<CryptoHolding.Holding> holdings = new java.util.ArrayList<>();
     if (ObjectUtils.isEmpty(holding.getPrevious())) {
-        if (!ObjectUtils.isEmpty(holding.getResults()) && !ObjectUtils.isEmpty(holding.getResults().getHoldings())) {
-            holdings = holding.getResults().getHoldings().stream()
-                .filter(holding1 -> Double.parseDouble(holding1.getAmount()) > 0 && holding1.getCurrency().isCrypto())
+      if (!ObjectUtils.isEmpty(holding.getResults())
+          && !ObjectUtils.isEmpty(holding.getResults().getHoldings())) {
+        holdings =
+            holding.getResults().getHoldings().stream()
+                .filter(
+                    holding1 ->
+                        Double.parseDouble(holding1.getAmount()) > 0
+                            && holding1.getCurrency().isCrypto())
                 .toList();
-        }
+      }
     } else {
-        if (!ObjectUtils.isEmpty(holding.getPrevious().getResults()) && !ObjectUtils.isEmpty(holding.getPrevious().getResults().getHoldings())) {
-            holdings = holding.getPrevious().getResults().getHoldings().stream()
-                .filter(holding1 -> Double.parseDouble(holding1.getAmount()) > 0 && holding1.getCurrency().isCrypto())
+      if (!ObjectUtils.isEmpty(holding.getPrevious().getResults())
+          && !ObjectUtils.isEmpty(holding.getPrevious().getResults().getHoldings())) {
+        holdings =
+            holding.getPrevious().getResults().getHoldings().stream()
+                .filter(
+                    holding1 ->
+                        Double.parseDouble(holding1.getAmount()) > 0
+                            && holding1.getCurrency().isCrypto())
                 .toList();
-        }
+      }
     }
     // Crea uno stream dalla lista, inverti l'ordine degli elementi e itera
     holdings.forEach(
@@ -87,7 +95,10 @@ public class PdfHoldingEndYear {
 
           BigDecimal amount = new BigDecimal(hold.getAmount());
           cell =
-              new PdfPCell(new Phrase(PdfUtils.formatCryptoAmount(amount.doubleValue()), PdfFont.VERY_SMALL.getFont()));
+              new PdfPCell(
+                  new Phrase(
+                      PdfUtils.formatCryptoAmount(amount.doubleValue()),
+                      PdfFont.VERY_SMALL.getFont()));
           cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
           cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
           cell.setBorder(PdfPCell.NO_BORDER);
@@ -118,13 +129,15 @@ public class PdfHoldingEndYear {
           double qta = Double.parseDouble(hold.getAmount());
           String priceString = " ";
           if (qta > 0) {
-              double unitPrice = val / qta;
-              priceString = "@ €" + PdfUtils.formatCurrency(unitPrice) + " per " + hold.getCurrency().getSymbol();
+            double unitPrice = val / qta;
+            priceString =
+                "@ €"
+                    + PdfUtils.formatCurrency(unitPrice)
+                    + " per "
+                    + hold.getCurrency().getSymbol();
           }
 
-          cell =
-              new PdfPCell(
-                  new Phrase(priceString, PdfFont.VERY_SMALL.getFont()));
+          cell = new PdfPCell(new Phrase(priceString, PdfFont.VERY_SMALL.getFont()));
           cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
           cell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Centra verticalmente il testo
           cell.setBorder(PdfPCell.NO_BORDER);
@@ -161,8 +174,16 @@ public class PdfHoldingEndYear {
                     MathService.round(
                         Double.parseDouble(
                             ObjectUtils.isEmpty(holding.getPrevious())
-                                ? (!ObjectUtils.isEmpty(holding.getResults()) && !ObjectUtils.isEmpty(holding.getResults().getTotal_cost()) ? holding.getResults().getTotal_cost() : "0")
-                                : (!ObjectUtils.isEmpty(holding.getPrevious().getResults()) && !ObjectUtils.isEmpty(holding.getPrevious().getResults().getTotal_cost()) ? holding.getPrevious().getResults().getTotal_cost() : "0")),
+                                ? (!ObjectUtils.isEmpty(holding.getResults())
+                                        && !ObjectUtils.isEmpty(
+                                            holding.getResults().getTotal_cost())
+                                    ? holding.getResults().getTotal_cost()
+                                    : "0")
+                                : (!ObjectUtils.isEmpty(holding.getPrevious().getResults())
+                                        && !ObjectUtils.isEmpty(
+                                            holding.getPrevious().getResults().getTotal_cost())
+                                    ? holding.getPrevious().getResults().getTotal_cost()
+                                    : "0")),
                         2)),
                 PdfFont.VERY_SMALL.getFont()));
     total.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -177,8 +198,16 @@ public class PdfHoldingEndYear {
                     MathService.round(
                         Double.parseDouble(
                             ObjectUtils.isEmpty(holding.getPrevious())
-                                ? (!ObjectUtils.isEmpty(holding.getResults()) && !ObjectUtils.isEmpty(holding.getResults().getTotal_value()) ? holding.getResults().getTotal_value() : "0")
-                                : (!ObjectUtils.isEmpty(holding.getPrevious().getResults()) && !ObjectUtils.isEmpty(holding.getPrevious().getResults().getTotal_value()) ? holding.getPrevious().getResults().getTotal_value() : "0")),
+                                ? (!ObjectUtils.isEmpty(holding.getResults())
+                                        && !ObjectUtils.isEmpty(
+                                            holding.getResults().getTotal_value())
+                                    ? holding.getResults().getTotal_value()
+                                    : "0")
+                                : (!ObjectUtils.isEmpty(holding.getPrevious().getResults())
+                                        && !ObjectUtils.isEmpty(
+                                            holding.getPrevious().getResults().getTotal_value())
+                                    ? holding.getPrevious().getResults().getTotal_value()
+                                    : "0")),
                         2)),
                 PdfFont.VERY_SMALL.getFont()));
     total.setHorizontalAlignment(Element.ALIGN_RIGHT);

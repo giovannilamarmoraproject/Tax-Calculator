@@ -165,11 +165,6 @@ public class PdfIncomingGains {
 
     PdfUtils.addSummaryTableRow(
         table,
-        "Cost",
-        "€" + MathService.round(Double.parseDouble(results.getExpenses().getCost()), 2),
-        null);
-    PdfUtils.addSummaryTableRow(
-        table,
         "Margin fee",
         "€" + MathService.round(Double.parseDouble(results.getExpenses().getMargin_fee()), 2),
         null);
@@ -177,6 +172,16 @@ public class PdfIncomingGains {
         table,
         "Loan fee",
         "€" + MathService.round(Double.parseDouble(results.getExpenses().getLoan_fee()), 2),
+        null);
+    PdfUtils.addSummaryTableRow(
+        table,
+        "Other fee",
+        "€" + MathService.round(Double.parseDouble(results.getExpenses().getOther_fee()), 2),
+        null);
+    PdfUtils.addSummaryTableRow(
+        table,
+        "Cost",
+        "€" + MathService.round(Double.parseDouble(results.getExpenses().getCost()), 2),
         null);
     PdfUtils.addSummaryTableRow(
         table,
@@ -204,13 +209,13 @@ public class PdfIncomingGains {
         " ");
     PdfUtils.addSummaryTableRow(
         table,
-        "Lost",
-        "€" + MathService.round(Double.parseDouble(results.getSpecial().getLost()), 2),
+        "Donation",
+        "€" + MathService.round(Double.parseDouble(results.getSpecial().getDonation()), 2),
         " ");
     PdfUtils.addSummaryTableRow(
         table,
-        "Donation",
-        "€" + MathService.round(Double.parseDouble(results.getSpecial().getDonation()), 2),
+        "Lost",
+        "€" + MathService.round(Double.parseDouble(results.getSpecial().getLost()), 2),
         " ");
     PdfUtils.addSummaryTableRow(
         table,

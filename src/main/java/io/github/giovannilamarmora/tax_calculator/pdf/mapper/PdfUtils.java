@@ -198,7 +198,7 @@ public class PdfUtils {
 
   public static String formatCryptoAmount(double amount) {
     NumberFormat format = NumberFormat.getNumberInstance(Locale.US);
-    format.setMinimumFractionDigits(2);
+    format.setMinimumFractionDigits(8);
     format.setMaximumFractionDigits(8);
     format.setGroupingUsed(true);
     return format.format(amount);

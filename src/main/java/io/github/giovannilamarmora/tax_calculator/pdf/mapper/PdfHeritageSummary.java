@@ -5,21 +5,15 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.draw.DottedLineSeparator;
 import io.github.giovannilamarmora.tax_calculator.pdf.PdfService;
-import io.github.giovannilamarmora.tax_calculator.pdf.model.CryptoInvestment;
 import io.github.giovannilamarmora.tax_calculator.pdf.model.PdfFont;
 import io.github.giovannilamarmora.tax_calculator.pdf.model.Transaction;
 import io.github.giovannilamarmora.utils.interceptors.LogInterceptor;
 import io.github.giovannilamarmora.utils.interceptors.LogTimeTracker;
 import io.github.giovannilamarmora.utils.logger.LoggerFilter;
 import io.github.giovannilamarmora.utils.math.MathService;
-import java.math.BigDecimal;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
 import org.slf4j.Logger;
 import org.springframework.util.ObjectUtils;
 
@@ -122,6 +116,36 @@ public class PdfHeritageSummary {
           lineCell.setColspan(9);
           table.addCell(lineCell); // Linea tratteggiata
         });
+
+    // Aggiungi la riga dei totali
+    double totalProfit = heritageMap.values().stream().mapToDouble(v -> v.get("profit")).sum();
+    double totalLost = heritageMap.values().stream().mapToDouble(v -> v.get("lost")).sum();
+    double totalNet = heritageMap.values().stream().mapToDouble(v -> v.get("net")).sum();
+
+    PdfPCell cell = new PdfPCell(new Phrase("Totale", PdfFont.SMALL_BOLD.getFont()));
+    cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+    cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+    cell.setBorder(PdfPCell.NO_BORDER);
+    table.addCell(cell);
+
+    cell = new PdfPCell(new Phrase(PdfUtils.formatCurrency(totalProfit), PdfFont.SMALL_GREY.getFont()));
+    cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+    cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+    cell.setBorder(PdfPCell.NO_BORDER);
+    table.addCell(cell);
+
+    cell = new PdfPCell(new Phrase(PdfUtils.formatCurrency(totalLost), PdfFont.SMALL_GREY.getFont()));
+    cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+    cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+    cell.setBorder(PdfPCell.NO_BORDER);
+    table.addCell(cell);
+
+    cell = new PdfPCell(new Phrase(PdfUtils.formatCurrency(totalNet), PdfFont.SMALL_GREY.getFont()));
+    cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+    cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+    cell.setFixedHeight(17f);
+    cell.setBorder(PdfPCell.NO_BORDER);
+    table.addCell(cell);
   }
 
   public static Map<String, Map<String, Double>> heritageMap(List<Transaction> transactions) {

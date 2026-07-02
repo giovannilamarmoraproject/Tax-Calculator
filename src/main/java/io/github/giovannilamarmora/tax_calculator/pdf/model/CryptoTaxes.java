@@ -98,9 +98,12 @@ public class CryptoTaxes {
   public static class Expenses {
     private String margin_fee;
     private String loan_fee;
+    private String other_fee;
     private String cost;
     private String transfer_fees;
     private String total;
+
+    public String getOther_fee() { return other_fee != null ? other_fee : "0.00"; }
   }
 
   @Builder
