@@ -150,8 +150,7 @@ public class PdfHeritageSummary {
       // Se manca più di 1 Euro, aggiungiamo una riga correttiva
       if (missingProfit > 1.0 || missingLost > 1.0) {
         PdfPCell cell =
-            new PdfPCell(
-                new Phrase("Differenza Koinly (Non dettagliata)", PdfFont.VERY_SMALL.getFont()));
+            new PdfPCell(new Phrase("Plus/minusvalenze compensate", PdfFont.VERY_SMALL.getFont()));
         cell.setHorizontalAlignment(Element.ALIGN_LEFT);
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         cell.setBorder(PdfPCell.NO_BORDER);
