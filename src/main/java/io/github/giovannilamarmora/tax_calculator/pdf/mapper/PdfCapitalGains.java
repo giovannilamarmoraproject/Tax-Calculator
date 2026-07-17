@@ -57,7 +57,7 @@ public class PdfCapitalGains {
         "€" + PdfUtils.formatCurrency(Double.parseDouble(results.getCapital_gains().getProceeds())),
         "Questo è l'importo che hai ricevuto da tutte le tue cessioni. Questa cifra può "
             + "essere più alta del previsto se hai anche fatto operazioni con i ricavi delle"
-            + "transazioni precedenti");
+            + " transazioni precedenti");
     PdfUtils.addSummaryTableRow(
         table,
         "Costi di acquisizione",

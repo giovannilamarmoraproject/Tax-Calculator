@@ -354,7 +354,7 @@
                     Copy
                 </button>
                 <pre><code class="language-javascript">(function () {
-  const YEAR = 2021;
+  const YEAR = 2025;
   const PAGE_COUNT = 25;
 
   const getCookie = (name) => {
@@ -405,12 +405,31 @@
     return response.json();
   };
 
+  // --- LOGICA DI POLLING PER IL REPORT FISCALE ---
   const fetchTax = async () => {
     const requestOptions = { method: "GET", headers: fetchHeaders(), redirect: "follow" };
-    const response = await fetch(`https://api.koinly.io/api/stats/tax?year=${YEAR}`, requestOptions);
-    return response.json();
+    const url = `https://api.koinly.io/api/stats/tax?year=${YEAR}`;
+    
+    let response = await fetch(url, requestOptions);
+    let data = await response.json();
+    
+    let attempts = 0;
+    while ((data.results == null && data.status !== "completed") && attempts < 15) {
+        console.log(`⏳ Koinly sta elaborando il Report Fiscale per il ${YEAR}... Attendo 3 secondi (tentativo ${attempts + 1}/15)`);
+        await delay(3000);
+        response = await fetch(url, requestOptions);
+        data = await response.json();
+        attempts++;
+    }
+    
+    if (data.results == null) {
+        console.warn(`⚠️ Attenzione: Koinly non ha restituito i dati fiscali completi dopo ${attempts} tentativi. Il JSON potrebbe essere parziale.`);
+    }
+    
+    return data;
   };
 
+  // --- LOGICA DI POLLING PER I BILANCI (HOLDINGS) ---
   const fetchHoldings = async () => {
     const requestOptions = { method: "GET", headers: fetchHeaders(), redirect: "follow" };
     const url = `https://api.koinly.io/api/stats/holdings?date=${YEAR}-12-31T23:59:59.999Z`;
@@ -418,11 +437,10 @@
     let response = await fetch(url, requestOptions);
     let data = await response.json();
     
-    // Polling logic: Koinly API can be asynchronous and return results: null initially
     let attempts = 0;
     while ((data.results == null && data.status !== "completed") && attempts < 15) {
-        console.log(`⏳ Koinly sta calcolando i saldi per il ${YEAR}... Attendo 2 secondi (tentativo ${attempts + 1}/15)`);
-        await delay(2000);
+        console.log(`⏳ Koinly sta elaborando i Bilanci per il ${YEAR}... Attendo 3 secondi (tentativo ${attempts + 1}/15)`);
+        await delay(3000);
         response = await fetch(url, requestOptions);
         data = await response.json();
         attempts++;
@@ -437,10 +455,27 @@
     return response.json();
   };
 
-  const fetchWallets = async () => {
+  // --- PAGINAZIONE PER SCARICARE TUTTI I WALLET ---
+  const fetchAllWallets = async () => {
+    const allWallets = [];
+    let currentPage = 1;
+    let totalPages;
     const requestOptions = { method: "GET", headers: fetchHeaders(), redirect: "follow" };
-    const response = await fetch(`https://api.koinly.io/api/wallets?per_page=25&with_api_options=1&q[sorts]=created_at%20desc&q[pool_true]=0`, requestOptions);
-    return response.json();
+
+    do {
+      const response = await fetch(`https://api.koinly.io/api/wallets?per_page=100&with_api_options=1&q[sorts]=created_at%20desc&q[pool_true]=0&page=${currentPage}`, requestOptions);
+      const data = await response.json();
+      
+      if (data.wallets) {
+        allWallets.push(...data.wallets);
+      }
+      
+      totalPages = data.meta ? data.meta.page.total_pages : 1;
+      currentPage++;
+      await delay(150);
+    } while (currentPage <= totalPages);
+
+    return allWallets;
   };
 
   const getAllTransactions = async () => {
@@ -449,7 +484,6 @@
     const totalPages = firstPage.meta.page.total_pages;
     const promises = [];
     
-    // Introduciamo un piccolo ritardo per sicurezza sulle pagine
     for (let i = 2; i <= totalPages; i++) {
       promises.push(fetchPage(i));
       await delay(100); 
@@ -476,8 +510,10 @@
     let totalPages;
     do {
       const inv = await fetchInvestments(transactionId, currentPage);
-      allInvestments.push(...inv.investments);
-      totalPages = inv.meta.page.total_pages;
+      if (inv.investments) {
+        allInvestments.push(...inv.investments);
+      }
+      totalPages = inv.meta ? inv.meta.page.total_pages : 1;
       currentPage++;
       await delay(150);
     } while (currentPage <= totalPages);
@@ -491,7 +527,6 @@
     const filledLength = Math.round(barLength * percent);
     const bar = '█'.repeat(filledLength) + '░'.repeat(barLength - filledLength);
     const percentageString = (percent * 100).toFixed(1);
-    
     console.log(`${prefix} [${bar}] ${percentageString}% (${current}/${total})`);
   };
 
@@ -499,26 +534,26 @@
     try {
       console.log("=========================================");
       console.log("🚀 INIZIO ESTRAZIONE DATI KOINLY 🚀");
-      console.log("=========================================\n");
+      console.log("=========================================");
       
       console.log("📥 Fase 1/4: Recupero Sessione e Report Fiscale...");
       const session = await fetchSession();
       const tax = await fetchTax();
-      const baseCurrency = session.portfolios[0].base_currency.symbol;
-      console.log("✅ Sessione e Tasse recuperate con successo!\n");
+      const baseCurrency = session.portfolios && session.portfolios[0] ? session.portfolios[0].base_currency.symbol : "EUR";
+      console.log("✅ Sessione e Tasse recuperate con successo!");
       
       console.log("📥 Fase 2/4: Download di tutte le Transazioni base...");
       let transactions = await getAllTransactions();
       console.log(`✅ Trovate ${transactions.length} transazioni!\n`);
       
       console.log("📥 Fase 3/4: Estrazione dettagli Investimenti (richiede tempo)...");
-      const targetTransactions = transactions.filter(t => t.fee != null || t.type == "exchange");
+      const targetTransactions = transactions.filter(t => t.fee != null || t.type === "exchange" || t.type === "sell" || (t.gain != null && parseFloat(t.gain) !== 0));
       const totalToProcess = targetTransactions.length;
       let processedCount = 0;
       
       let processedTransactions = [];
       for (const transaction of transactions) {
-        if (transaction.fee != null || transaction.type == "exchange") {
+        if (transaction.fee != null || transaction.type === "exchange" || transaction.type === "sell" || (transaction.gain != null && parseFloat(transaction.gain) !== 0)) {
           try {
             processedCount++;
             printProgressBar(processedCount, totalToProcess, "⏳ In elaborazione:");
@@ -527,18 +562,18 @@
             transaction.investments = investments;
             await delay(250);
           } catch (e) {
-            console.error("\n❌ Errore recupero investimenti per: " + transaction.id, e);
+            console.error("\n❌ Errore recupero investimenti per transazione ID: " + transaction.id, e);
           }
         }
         processedTransactions.push(transaction);
       }
       transactions = processedTransactions;
-      console.log("✅ Dettagli Investimenti scaricati completamente!\n");
+      console.log("\n✅ Dettagli Investimenti scaricati completamente!\n");
       
       console.log("📥 Fase 4/4: Download Bilanci (Holdings) e Portafogli (Wallets)...");
       const holdings = await fetchHoldings();
-      const wallets = await fetchWallets();
-      console.log("✅ Bilanci e Portafogli recuperati!\n");
+      const allWalletsList = await fetchAllWallets();
+      console.log(`✅ Bilanci e Portafogli recuperati! (Trovati ${allWalletsList.length} portafogli)\n`);
       
       const data = {
         year: YEAR,
@@ -546,7 +581,7 @@
         tax: tax,
         transactions: transactions,
         holdings: holdings,
-        wallets: wallets.wallets,
+        wallets: allWalletsList,
       };
       
       console.log("🎉 TUTTO FATTO! Preparazione del file per il download in corso...");

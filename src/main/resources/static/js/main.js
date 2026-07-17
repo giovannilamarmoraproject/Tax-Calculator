@@ -102,7 +102,7 @@ async function generatePDF(btnElement) {
 
       } catch (innerError) {
         console.error("Errore durante la generazione:", innerError);
-        alert("Si è verificato un errore durante la generazione del PDF. Riprova.");
+        //alert("Si è verificato un errore durante la generazione del PDF. Riprova.");
       } finally {
         if (input.parentNode) input.parentNode.removeChild(input);
         

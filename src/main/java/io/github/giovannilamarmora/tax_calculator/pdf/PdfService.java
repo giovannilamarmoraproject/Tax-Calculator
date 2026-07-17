@@ -45,7 +45,7 @@ public class PdfService {
 
       PdfIncomingGains.otherAndGiftSummary(document, taxRequest.getTax());
 
-      PdfHeritageSummary.addTable(document, taxRequest.getTransactions());
+      PdfHeritageSummary.addTable(document, taxRequest.getTransactions(), taxRequest.getTax());
 
       PdfHoldingEndYear.addHoldingEndOfYearTable(document, taxRequest.getHoldings());
 
