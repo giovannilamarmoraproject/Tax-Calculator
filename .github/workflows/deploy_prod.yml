@@ -22,7 +22,7 @@ jobs:
         id: setup
         uses: actions/setup-java@v6.0.0
         with:
-          java-version: '22'
+          java-version: '21'
           distribution: 'corretto'
 
   install-test-and-build:
@@ -36,7 +36,7 @@ jobs:
         id: setup
         uses: actions/setup-java@v6.0.0
         with:
-          java-version: '22'
+          java-version: '21'
           distribution: 'corretto'
 
       - name: ⬇️ Install dependencies
@@ -73,7 +73,7 @@ jobs:
         id: setup
         uses: actions/setup-java@v6.0.0
         with:
-          java-version: '22'
+          java-version: '21'
           distribution: 'corretto'
 
       - name: 📝 Set Release Version
