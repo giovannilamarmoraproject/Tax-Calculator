@@ -17,15 +17,18 @@ RUN mvn clean package -DskipTests -DGCLOUD_PROJECT=tax-calculator
 # ==========================================
 # Stage 2: Hardened Runtime Stage
 # ==========================================
-FROM eclipse-temurin:22-jre-alpine
-# WHEN READY FOR DHI JAVA 21: FROM dhi.io/eclipse-temurin:21-alpine3.22
+# We use 'jammy' (Ubuntu) instead of 'alpine' because 'netty-tcnative' 
+# (a gRPC/Netty dependency used by the app) requires glibc. 
+# Alpine uses musl libc, which causes SIGSEGV crashes on ARM64 (aarch64).
+FROM eclipse-temurin:22-jre-jammy
+# WHEN READY FOR DHI JAVA 21: FROM dhi.io/eclipse-temurin:21.0-debian13
 
 # Set Timezone
 ENV TZ=Europe/Rome
 
 # Security: Create a dedicated non-root user and group
-# (Alpine uses 'addgroup' and 'adduser')
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+# (Debian/Ubuntu uses groupadd and useradd)
+RUN groupadd -r appgroup && useradd -r -g appgroup appuser
 
 # Set the working directory
 WORKDIR /app
