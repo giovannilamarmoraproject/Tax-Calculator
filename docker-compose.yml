@@ -2,7 +2,7 @@ name: tax-calculator
 
 version: '3.9'
 services:
-  access-sphere:
+  tax-calculator:
     container_name: tax-calculator
     image: ${DOCKER_REPOSITORY:-giovannilamarmora/tax-calculator}:${APP_VERSION:-latest}
     hostname: tax.calculator
