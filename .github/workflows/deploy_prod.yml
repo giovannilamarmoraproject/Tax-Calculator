@@ -1,8 +1,9 @@
 name: Deploy-PROD
 
 on:
-  push:
-    branches: [ master ]
+  #push:
+  #  branches: [ master ]
+  workflow_dispatch:
 
 env:
   DOCKER_USERNAME: ${{ vars.DOCKER_USERNAME }}

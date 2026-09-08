@@ -1,8 +1,10 @@
+name: tax-calculator
+
 version: '3.9'
 services:
   access-sphere:
     container_name: tax-calculator
-    image: giovannilamarmora/tax-calculator:${APP_VERSION}
+    image: ${DOCKER_REPOSITORY:-giovannilamarmora/tax-calculator}:${APP_VERSION:-latest}
     hostname: tax.calculator
     ports:
       - "8010:8080"
@@ -14,6 +16,18 @@ services:
     volumes:
       # Monta il volume "microservice" nella cartella /secrets (in sola lettura)
       - microservice:/secrets:ro
+    labels:
+      # 1. Attiva il monitoraggio di WUD
+      - "wud.watch=true"
+      # 2. Monitora specificamente il tag latest
+      - "wud.tag.include=^latest$"
+      # 3. Controlla le variazioni di hash digest SHA-256
+      - "wud.watch.digest=true"
+      # 4. Attiva il trigger di deploy automatico
+      - "wud.trigger.docker.local.enabled=true"
+      # 5. Forza l'esecuzione automatica immediata al rilevamento
+      - "wud.trigger.docker.local.auto=true"
+      - "wud.trigger.docker.local.threshold=all"
     deploy:
       replicas: 1  # Cambia il numero di repliche a seconda delle tue esigenze
     networks:
