@@ -16,7 +16,7 @@ RUN mvn clean package -DskipTests -DGCLOUD_PROJECT=tax-calculator
 # ==========================================
 # Stage 2: Hardened Runtime Stage
 # ==========================================
-FROM dhi.io/eclipse-temurin:22-jre-alpine
+FROM eclipse-temurin:22-jre-alpine
 
 # Set Timezone
 ENV TZ=Europe/Rome
