@@ -1,7 +1,7 @@
-env: Production
+env: ${APP_ENV:Production} # Used for Google Cloud LOG
 server:
   port: 8080
-  
+
 app:
   version: @project.version@
   shouldNotFilter: "**/swagger-ui/**,/api-docs,**/api-docs/**,*/,*/css/*,/js/main.js,/js/access-sphere.js,*/img/*,*/favicon.ico,*/index.html,*/documentation/*,*/error.html,/config/config.js"
@@ -15,10 +15,10 @@ rest:
   client:
     access-sphere:
       client-id: TAX-CALCULATOR-01
-      baseUrl: http://access.sphere.service:8080
+      baseUrl: ${ACCESS_SPHERE_BASE_URL:http://access.sphere.service:8080}
       userInfo: /v1/userInfo
 
 logging:
-  config: classpath:logback-google.xml # classpath:logback-google.xml, classpath:logback-logtail.xml
+  config: ${LOGBACK_FILE:classpath:logback-spring.xml} # classpath:logback-google.xml, classpath:logback-logtail.xml
   level:
     io.github.giovannilamarmora: ${LOGGING_LEVEL}

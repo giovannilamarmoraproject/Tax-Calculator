@@ -1,44 +1,89 @@
 name: tax-calculator
 
-version: '3.9'
 services:
   tax-calculator:
+    # Nome univoco assegnato al container in esecuzione
     container_name: tax-calculator
+    # Immagine Docker con fallback: usa la variabile DOCKER_REPOSITORY (default 'giovannilamarmora/tax-calculator') e APP_VERSION (default 'latest')
     image: ${DOCKER_REPOSITORY:-giovannilamarmora/tax-calculator}:${APP_VERSION:-latest}
+    # Hostname interno visibile dal container stesso
     hostname: tax.calculator
+    # Mappatura porte (Host:Container): espone la porta dell'applicazione (default 8010 sull'host -> 8080 nel container)
     ports:
-      - "8010:8080"
+      - ${PORT:-8010:8080}
+
     environment:
-      - SPRING_PROFILES_ACTIVE=deploy
-      - LOGGING_LEVEL=${LOGGING_LEVEL}
+      # -----------------------------
+      # Spring Profile
+      # -----------------------------
+      # Profilo Spring attivo (default: 'deploy')
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-deploy}
+      - APP_ENV=${APP_ENV:-Production}
+
+      # -----------------------------
+      # LOGS Settings
+      # -----------------------------
+      # Livello di log applicativo (es. INFO, DEBUG, WARN, ERROR)
+      - LOGGING_LEVEL=${LOGGING_LEVEL:-INFO}
+      # File di configurazione Logback (default 'logback-spring.xml'; per Google Cloud usare 'logback-google.xml')
+      - LOGBACK_FILE=${LOGBACK_FILE:-classpath:logback-spring.xml}
+
+      # -----------------------------
+      # Google Cloud Settings
+      # -----------------------------
+      # ID del progetto Google Cloud di riferimento
       - GCLOUD_PROJECT=${GCLOUD_PROJECT}
+      # Percorso del file JSON con le credenziali del Service Account GCP
       - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
+
+      # -----------------------------
+      # Rest Client Settings
+      # -----------------------------
+      - ACCESS_SPHERE_BASE_URL=${ACCESS_SPHERE_BASE_URL:-http://access.sphere.service:8080}
+
     volumes:
-      # Monta il volume "microservice" nella cartella /secrets (in sola lettura)
+      # Monta il volume esterno "microservice" nel percorso /secrets del container in modalità sola lettura (:ro)
       - microservice:/secrets:ro
+
     labels:
-      # 1. Attiva il monitoraggio di WUD
+      # -----------------------------
+      # Configurazione WUD (What's Up Docker?)
+      # -----------------------------
+      # 1. Attiva il monitoraggio degli aggiornamenti immagine per questo container
       - "wud.watch=true"
-      # 2. Monitora specificamente il tag latest
+      # 2. Filtro regex: monitora esclusivamente il tag 'latest'
       - "wud.tag.include=^latest$"
-      # 3. Controlla le variazioni di hash digest SHA-256
+      # 3. Controlla le variazioni di hash digest SHA-256 (rileva push su 'latest' senza cambio tag)
       - "wud.watch.digest=true"
-      # 4. Attiva il trigger di deploy automatico
+      # 4. Attiva il trigger di aggiornamento/deploy locale di Docker
       - "wud.trigger.docker.local.enabled=true"
-      # 5. Forza l'esecuzione automatica immediata al rilevamento
+      # 5. Forza l'aggiornamento e riavvio automatico immediato al rilevamento di una nuova versione
       - "wud.trigger.docker.local.auto=true"
+      # Soglia di aggiornamento: esegue il trigger per qualsiasi tipo di update rilevato
       - "wud.trigger.docker.local.threshold=all"
+
     deploy:
-      replicas: 1  # Cambia il numero di repliche a seconda delle tue esigenze
+      # Numero di istanze/repliche del container da avviare
+      replicas: 1
+
     networks:
       docker-network:
+        # Alias di rete per la risoluzione DNS interna (raggiungibile dagli altri container come http://tax.calculator)
         aliases:
           - tax.calculator
 
+# -----------------------------
+# Definizione Reti
+# -----------------------------
 networks:
   docker-network:
+    # Rete Docker preesistente e condivisa, creata esternamente
     external: true
 
+# -----------------------------
+# Definizione Volumi
+# -----------------------------
 volumes:
   microservice:
+    # Volume Docker preesistente e condiviso, creato esternamente (es. per certificati/segreti)
     external: true
