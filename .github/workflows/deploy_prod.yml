@@ -9,6 +9,11 @@ jobs:
   build-and-test:
     name: 🌱 Install, Test and Package
     runs-on: ubuntu-latest
+    outputs:
+      release_version: ${{ steps.meta.outputs.release_version }}
+      tag_name: ${{ steps.meta.outputs.tag_name }}
+    environment:
+      name: Production
     steps:
       - name: "☁️ Checkout Repository"
         uses: actions/checkout@v7.0.1
@@ -23,6 +28,13 @@ jobs:
       - name: 📂 Test and Package with Maven
         run: mvn clean package
 
+      - name: 📝 Extract Release Metadata
+        id: meta
+        run: |
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "release_version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "tag_name=v${VERSION}" >> $GITHUB_OUTPUT
+
       - name: 📤 Upload Build Artifact
         uses: actions/upload-artifact@v7
         with:
@@ -30,20 +42,17 @@ jobs:
           path: target/*.jar
           retention-days: 1
 
-  build-and-push-ghcr:
-    name: 🐳 Build & Push to GHCR
+  build-image:
+    name: 🐳 Build Docker Images
     runs-on: ubuntu-latest
     needs: build-and-test
     environment:
       name: Production
-    permissions:
-      contents: read
-      packages: write
-    outputs:
-      release_version: ${{ steps.meta.outputs.release_version }}
-      tag_name: ${{ steps.meta.outputs.tag_name }}
-      image_name: ${{ steps.meta.outputs.image_name }}
-
+    strategy:
+      matrix:
+        platform:
+          - linux/amd64
+          - linux/arm64
     steps:
       - name: "☁️ Checkout Repository"
         uses: actions/checkout@v7.0.1
@@ -54,25 +63,67 @@ jobs:
           name: app-jar
           path: target/
 
-      - name: Set up JDK (for version extraction)
-        uses: actions/setup-java@v6.0.0
+      - name: 🔧 Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: 🔧 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: 🛠️ Build and Export OCI Archive
+        id: build
+        uses: docker/build-push-action@v7
         with:
-          java-version: '21'
-          distribution: 'corretto'
+          context: .
+          file: Dockerfile
+          platforms: ${{ matrix.platform }}
+          outputs: type=image,name=temp-image,push=false,name-canonical=true
+        env:
+          PLATFORM_PAIR: ${{ matrix.platform }}
 
-      - name: 📝 Set Release Metadata
-        id: meta
+      - name: 📦 Sanitize Platform Name
+        id: sanitize
         run: |
-          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          TAG_NAME="v${VERSION}"
-          IMAGE_NAME="ghcr.io/${{ github.repository }}"
-          IMAGE_NAME_LOWER="${IMAGE_NAME,,}"
-          
-          echo "release_version=${VERSION}" >> $GITHUB_OUTPUT
-          echo "tag_name=${TAG_NAME}" >> $GITHUB_OUTPUT
-          echo "image_name=${IMAGE_NAME_LOWER}" >> $GITHUB_OUTPUT
+          PLATFORM_SLUG=$(echo "${{ matrix.platform }}" | tr '/' '-')
+          echo "slug=${PLATFORM_SLUG}" >> $GITHUB_OUTPUT
 
-      - name: 🔧 Set up QEMU (Multi-platform)
+      - name: 📤 Upload Platform Image
+        uses: actions/upload-artifact@v7
+        with:
+          name: digests-${{ steps.sanitize.outputs.slug }}
+          path: ${{ runner.temp }}/docker-buildx/
+          if-no-files-found: ignore
+          retention-days: 1
+
+  deploy-ghcr:
+    name: 🚀 Deploy to GHCR
+    runs-on: ubuntu-latest
+    needs: [ build-and-test, build-image ]
+    environment:
+      name: Production
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      release_version: ${{ needs.build-and-test.outputs.release_version }}
+      tag_name: ${{ needs.build-and-test.outputs.tag_name }}
+      image_name: ${{ steps.image_meta.outputs.image_name }}
+    steps:
+      - name: "☁️ Checkout Repository"
+        uses: actions/checkout@v7.0.1
+
+      - name: 📥 Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-jar
+          path: target/
+
+      - name: 📝 Set Image Metadata
+        id: image_meta
+        run: |
+          IMAGE_NAME="ghcr.io/${{ github.repository }}"
+          echo "image_name=${IMAGE_NAME,,}" >> $GITHUB_OUTPUT
+
+      - name: 🔧 Set up QEMU
         uses: docker/setup-qemu-action@v3
 
       - name: 🔧 Set up Docker Buildx
@@ -85,7 +136,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 🚀 Build & Push Docker Image
+      - name: 🚀 Push Multi-Platform Image to GHCR
         uses: docker/build-push-action@v7
         with:
           context: .
@@ -97,13 +148,14 @@ jobs:
           #  ${{ steps.meta.outputs.image_name }}:${{ steps.meta.outputs.release_version }}
           #  ${{ steps.meta.outputs.image_name }}:${{ steps.meta.outputs.tag_name }}
           tags: |
-            ${{ steps.meta.outputs.image_name }}:latest
-            ${{ steps.meta.outputs.image_name }}:${{ steps.meta.outputs.tag_name }}
+            ${{ steps.image_meta.outputs.image_name }}:latest
+            ${{ steps.image_meta.outputs.image_name }}:${{ needs.build-and-test.outputs.release_version }}
+            ${{ steps.image_meta.outputs.image_name }}:${{ needs.build-and-test.outputs.tag_name }}
 
   create-release:
     name: 🏷️ Publish GitHub Release
     runs-on: ubuntu-latest
-    needs: build-and-push-ghcr
+    needs: deploy-ghcr
     environment:
       name: Production
     permissions:
@@ -117,9 +169,9 @@ jobs:
       - name: 📝 Generate Release Changelog
         id: changelog
         env:
-          TAG_NAME: ${{ needs.build-and-push-ghcr.outputs.tag_name }}
-          VERSION: ${{ needs.build-and-push-ghcr.outputs.release_version }}
-          IMAGE_NAME: ${{ needs.build-and-push-ghcr.outputs.image_name }}
+          TAG_NAME: ${{ needs.deploy-ghcr.outputs.tag_name }}
+          VERSION: ${{ needs.deploy-ghcr.outputs.release_version }}
+          IMAGE_NAME: ${{ needs.deploy-ghcr.outputs.image_name }}
         run: |
           PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
           if [ -n "$PREV_TAG" ]; then
@@ -127,17 +179,17 @@ jobs:
           else
             COMMITS=$(git log -n 20 --oneline --no-merges --pretty=format:"* %s (%h)")
           fi
-          
+
           cat <<EOF > release_notes.md
           # Tax Calculator ${TAG_NAME}
-          
+
           New version of **Tax Calculator** successfully built and deployed to GitHub Container Registry.
-          
+
           ### 📦 Release Details
           - **Version:** \`${VERSION}\`
           - **Tag:** \`${TAG_NAME}\`
           - **Docker Image:** \`${IMAGE_NAME}:${VERSION}\`
-          
+
           ### 🛠️ Changes Included
           ${COMMITS}
           EOF
@@ -145,8 +197,8 @@ jobs:
       - name: 🚀 Create GitHub Release
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: ${{ needs.build-and-push-ghcr.outputs.tag_name }}
-          name: ${{ needs.build-and-push-ghcr.outputs.tag_name }}
+          tag_name: ${{ needs.deploy-ghcr.outputs.tag_name }}
+          name: ${{ needs.deploy-ghcr.outputs.tag_name }}
           body_path: release_notes.md
           draft: false
           prerelease: false
